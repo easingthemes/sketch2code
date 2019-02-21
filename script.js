@@ -143,9 +143,10 @@ const renderImage = function (data, section, wrapper, width, height) {
 const renderImages = function () {
     let top = settings.spacing;
     state.takePhoto = true;
+    const time = Date.now();
     setTimeout(function () {
         renderArea(
-            'all',
+            `all-${time}`,
             state.x,
             top,
             state.width,
@@ -156,7 +157,7 @@ const renderImages = function () {
 
         settings.rows.forEach(function (row, i) {
             renderArea(
-                `part-${i}_${top}`,
+                `part-${i}_${time}`,
                 state.x,
                 top,
                 state.width,
