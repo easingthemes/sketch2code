@@ -1,19 +1,14 @@
 {
   "name": "sketch2code",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "http-server -S"
   },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "facefilter": "^1.0.4",
-    "http-server": "^0.11.1",
-    "https-server": "^0.1.2",
-    "instacam": "^1.6.2",
-    "webcamjs": "^1.0.25"
+  "author": "Dragan Filipovic",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "http-server": "^0.11.1"
   }
 }

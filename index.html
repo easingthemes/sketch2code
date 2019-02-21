@@ -1,30 +1,29 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <link rel="stylesheet" href="style.css">
-  <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <title>Sketch2Code NC Summit 2019</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="plugins/adapter-latest.js"></script>
 </head>
 
 <body>
-<div class="wrapper">
-    <video id="video" autoplay="true" playsinline></video>
-    <canvas class="canvas"></canvas>
-    <div class="controlls">
-        <button class="button">
-            <span>Take Photo</span>
-        </button>
+    <div class="wrapper">
+        <video id="video" autoplay="true" playsinline></video>
+        <canvas class="canvas"></canvas>
+        <div class="controlls">
+            <button class="button">
+                <span>Take Photo</span>
+            </button>
+        </div>
+
+        <div class="thumbs"></div>
+        <div class="parts"></div>
     </div>
+    <div class="resolution"></div>
 
-    <div class="thumbs"></div>
-    <div class="parts"></div>
-</div>
-<div class="resolution"></div>
-<script src="resolution.js"></script>
-<script src="script.js"></script>
-
+    <script src="js/resolution.js"></script>
+    <script src="plugins/jquery.min.js" async></script>
+    <script src="js/script.js"></script>
 </body>
-
 </html>
