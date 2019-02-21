@@ -178,36 +178,25 @@ button.addEventListener('click', function (e) {
 const postImage = function (name, canvasPart) {
     canvasPart.toBlob(function(blob) {
         const formData = new FormData();
-        formData.append('image', blob, name)
+        formData.append('image', blob, name);
 
-        fetch(`${db}/media/${name}?key=${key}`, {
-            method: 'POST',
-            body: formData
-        }).then(response => {
-            console.log('response', response);
-        }).catch(function (e) {
-            console.log('error', e);
+        jQuery.ajaxPrefilter(function( options ) {
+            if ( !options.beforeSend) {
+                options.beforeSend = function (xhr) {
+                    xhr.setRequestHeader('x-apikey', key);
+                }
+            }
+        });
+        jQuery.ajax({
+            "data": formData,
+            "url": `${db}/media`,
+            "method": "POST",
+            enctype: 'multipart/form-data',
+            processData: false,
+            contentType: false,
+            traditional: true,
+        }).done(function (response) {
+            console.log('resp', response)
         });
     });
-    testPost();
 };
-
-const testPost = function () {
-    var data = null;
-
-    var xhr = new XMLHttpRequest();
-    xhr.withCredentials = true;
-
-    xhr.addEventListener("readystatechange", function () {
-        if (this.readyState === 4) {
-            console.log(this.responseText);
-        }
-    });
-
-    xhr.open("GET", db);
-    xhr.setRequestHeader("content-type", "application/json");
-    xhr.setRequestHeader("x-apikey", key);
-    xhr.setRequestHeader("cache-control", "no-cache");
-
-    xhr.send(data);
-}
