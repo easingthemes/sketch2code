@@ -21,11 +21,20 @@ html, body {
 }
 
 .canvas {
-    width: 100%;
     height: auto;
     position: relative;
     z-index: 1;
     max-height: 100vh;
+}
+@media (orientation: landscape) {
+    .canvas {
+        max-width: 100%;
+    }
+}
+@media (orientation: portrait) {
+    .canvas {
+        width: 100%;
+    }
 }
 
 html {

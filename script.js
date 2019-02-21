@@ -5,7 +5,8 @@ const parts = document.querySelector('.parts');
 const button = document.querySelector('.button');
 const resolution = document.querySelector('.resolution');
 const context = canvas.getContext('2d');
-
+const key = '5c6ec8e728ca2e129e8696e7';
+const db = 'https://sketch2code-9caf.restdb.io';
 const state = {
     videoWidth: 0,
     videoHeight: 0,
@@ -106,8 +107,12 @@ resCheck(function (camWidth, camHeight) {
 });
 
 const renderArea = function (name, x, y, width, height, fullCanvas, wrapper) {
-    const data = getCanvasArea(x, y, width, height, fullCanvas);
+    const newCanvas = getCanvasArea(x, y, width, height, fullCanvas);
+    const data = newCanvas.toDataURL();
     renderImage(data, name, wrapper, width, height);
+
+    postImage(name, newCanvas);
+
 };
 
 const getCanvasArea = function (x, y, width, height, fullCanvas) {
@@ -118,7 +123,7 @@ const getCanvasArea = function (x, y, width, height, fullCanvas) {
     const newContext = newCanvas.getContext('2d');
     newContext.drawImage(fullCanvas, x, y, width, height, 0, 0, width, height);
 
-    return newCanvas.toDataURL();
+    return newCanvas;
 };
 
 const renderImage = function (data, section, wrapper, width, height) {
@@ -135,8 +140,7 @@ const renderImage = function (data, section, wrapper, width, height) {
     link.appendChild(img);
 };
 
-button.addEventListener('click', function (e) {
-    e.preventDefault();
+const renderImages = function () {
     let top = settings.spacing;
     state.takePhoto = true;
     setTimeout(function () {
@@ -164,4 +168,46 @@ button.addEventListener('click', function (e) {
         });
         state.takePhoto = false;
     }, 30);
+};
+
+button.addEventListener('click', function (e) {
+    e.preventDefault();
+    renderImages();
 });
+
+const postImage = function (name, canvasPart) {
+    canvasPart.toBlob(function(blob) {
+        const formData = new FormData();
+        formData.append('image', blob, name)
+
+        fetch(`${db}/media/${name}?key=${key}`, {
+            method: 'POST',
+            body: formData
+        }).then(response => {
+            console.log('response', response);
+        }).catch(function (e) {
+            console.log('error', e);
+        });
+    });
+    testPost();
+};
+
+const testPost = function () {
+    var data = null;
+
+    var xhr = new XMLHttpRequest();
+    xhr.withCredentials = true;
+
+    xhr.addEventListener("readystatechange", function () {
+        if (this.readyState === 4) {
+            console.log(this.responseText);
+        }
+    });
+
+    xhr.open("GET", db);
+    xhr.setRequestHeader("content-type", "application/json");
+    xhr.setRequestHeader("x-apikey", key);
+    xhr.setRequestHeader("cache-control", "no-cache");
+
+    xhr.send(data);
+}
