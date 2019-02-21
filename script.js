@@ -154,9 +154,9 @@ const renderImages = function () {
             thumbs
         );
 
-        settings.rows.forEach(function (row) {
+        settings.rows.forEach(function (row, i) {
             renderArea(
-                `header_${top}`,
+                `part-${i}_${top}`,
                 state.x,
                 top,
                 state.width,
