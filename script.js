@@ -3,7 +3,7 @@ const canvas = document.querySelector('.canvas');
 const thumbs = document.querySelector('.thumbs');
 const parts = document.querySelector('.parts');
 const button = document.querySelector('.button');
-
+const resolution = document.querySelector('.resolution');
 const context = canvas.getContext('2d');
 
 const state = {
@@ -75,7 +75,7 @@ const renderLayout = function (ctx, left, width) {
 
 resCheck(function (width, height) {
     console.log('resolution: ', width, height);
-
+    resolution.innerHTML = `${width}/${height}`;
     navigator.mediaDevices.getUserMedia({
         audio: false,
         video: {
