@@ -12,18 +12,20 @@ const state = {
     x: 0,
     width: 0,
     height: 0,
-    takePhoto: false
+    takePhoto: false,
+    isPortrait: window.innerHeight > window.innerWidth,
+    isRetina: window.devicePixelRatio > 1
 };
-
+const retina = state.isPortrait ? 1.9 : 1;
 const config = {
-    spacing: 10,
-    header: 30,
-    stage: 200,
-    teaserRow: 200,
+    spacing: 10 * retina,
+    header: 30 * retina,
+    stage: 200 * retina,
+    teaserRow: 150 * retina,
     paperWidth: 67.5,
     paperHeight: 98,
     imageType: 'image/png',
-    lineWidth: 10,
+    lineWidth: 6,
     strokeStyle: 'green'
 };
 
@@ -73,7 +75,14 @@ const renderLayout = function (ctx, left, width) {
     ctx.stroke();
 };
 
-resCheck(function (width, height) {
+resCheck(function (camWidth, camHeight) {
+    let width = camWidth,
+        height = camHeight;
+    if (state.isPortrait){
+            width = camHeight;
+            height = camWidth;
+    }
+
     console.log('resolution: ', width, height);
     resolution.innerHTML = `${width}/${height}`;
     navigator.mediaDevices.getUserMedia({
@@ -81,10 +90,10 @@ resCheck(function (width, height) {
         video: {
             facingMode: 'environment',
             width: {
-                min: width
+                min: camWidth
             },
             height: {
-                min: height
+                min: camHeight
             }
         }
     }).then(function(stream) {

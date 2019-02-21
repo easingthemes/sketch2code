@@ -21,7 +21,8 @@ html, body {
 }
 
 .canvas {
-    max-width: 100%;
+    width: 100%;
+    height: auto;
     position: relative;
     z-index: 1;
     max-height: 100vh;
