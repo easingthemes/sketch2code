@@ -20,7 +20,7 @@ const state = {
 const retina = state.isPortrait ? 1.9 : 1;
 const config = {
     spacing: 10 * retina,
-    header: 30 * retina,
+    header: 40 * retina,
     stage: 200 * retina,
     teaserRow: 150 * retina,
     paperWidth: 67.5,

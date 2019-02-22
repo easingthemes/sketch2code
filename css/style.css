@@ -21,6 +21,7 @@ html, body {
 }
 
 .canvas {
+    margin: 0 auto;
     height: auto;
     position: relative;
     z-index: 1;
