@@ -33,14 +33,26 @@ const config = {
 const settings = Object.assign({
     paperScale: config.paperWidth/config.paperHeight,
     rows: [
-        config.header,
-        config.stage,
-        config.teaserRow,
-        config.teaserRow
+        {
+            height: config.header,
+            url: `${db}/media`
+        },
+        {
+            height: config.stage,
+            url: `${db}/media`
+        },
+        {
+            height: config.teaserRow,
+            url: `${db}/media`
+        },
+        {
+            height: config.teaserRow,
+            url: `${db}/media`
+        }
     ],
 }, config);
 
-settings.rowsHeight = settings.rows.reduce((a, b) => a + b, 0);
+settings.rowsHeight = settings.rows.reduce((a, b) => a + b.height, 0);
 
 // Draw canvas from video
 resCheck(function (camWidth, camHeight) {
@@ -102,8 +114,8 @@ const renderLayout = function (ctx, left, width) {
 
     let top = settings.spacing;
     settings.rows.forEach(function (row) {
-        ctx.rect(left, top, width, row);
-        top = top + row;
+        ctx.rect(left, top, width, row.height);
+        top = top + row.height;
     });
     ctx.stroke();
 };
@@ -127,7 +139,8 @@ const handleImages = function () {
             state.width,
             state.height,
             canvas,
-            thumbs
+            thumbs,
+            null
         );
 
         settings.rows.forEach(function (row, i) {
@@ -136,23 +149,24 @@ const handleImages = function () {
                 state.x,
                 top,
                 state.width,
-                row,
+                row.height,
                 canvas,
-                parts
+                parts,
+                row.url
             );
-            top = top + row;
+            top = top + row.height;
         });
 
         state.takePhoto = false;
     }, 40);
 };
 
-const renderArea = function (name, x, y, width, height, fullCanvas, wrapper) {
+const renderArea = function (name, x, y, width, height, fullCanvas, wrapper, url) {
     const newCanvas = getCanvasArea(x, y, width, height, fullCanvas);
     const data = newCanvas.toDataURL();
 
     renderImage(data, name, wrapper);
-    postImage(name, newCanvas);
+    postImage(name, newCanvas, url);
 };
 
 const getCanvasArea = function (x, y, width, height, fullCanvas) {
@@ -177,32 +191,37 @@ const renderImage = function (data, filename, wrapper) {
     link.appendChild(img);
 };
 
-const postImage = function (filename, canvasPart) {
-    canvasPart.toBlob(function(blob) {
-        const formData = new FormData();
-        formData.append('image', blob, filename);
-        // restdb.io API works only with jQuery
-        // TODO fix vanilla JS request and remove jQuery
-        $.ajaxPrefilter(function( options ) {
-            if ( !options.beforeSend) {
-                options.beforeSend = function(xhr) {
-                    xhr.setRequestHeader('x-apikey', key);
-                }
-            }
-        });
+const postImage = function (filename, canvasPart, url) {
+    if (!url) {
+        console.log('Wrong url: ', url);
+        return;
+    }
 
-        $.ajax({
-            data: formData,
-            url: `${db}/media`,
-            method: 'POST',
-            enctype: 'multipart/form-data',
-            processData: false,
-            contentType: false,
-            traditional: true,
-        }).done(function (response) {
-            console.log('response', response);
-        }).fail(function (e) {
-            console.log('error response', e);
-        });
-    });
+    // canvasPart.toBlob(function(blob) {
+    //     const formData = new FormData();
+    //     formData.append('image', blob, filename);
+    //     // restdb.io API works only with jQuery
+    //     // TODO fix vanilla JS request and remove jQuery
+    //     $.ajaxPrefilter(function( options ) {
+    //         if ( !options.beforeSend) {
+    //             options.beforeSend = function(xhr) {
+    //                 xhr.setRequestHeader('x-apikey', key);
+    //             }
+    //         }
+    //     });
+    //
+    //     $.ajax({
+    //         data: formData,
+    //         url: url,
+    //         method: 'POST',
+    //         enctype: 'multipart/form-data',
+    //         processData: false,
+    //         contentType: false,
+    //         traditional: true,
+    //     }).done(function (response) {
+    //         console.log('response', response);
+    //     }).fail(function (e) {
+    //         console.log('error response', e);
+    //     });
+    // });
 };
