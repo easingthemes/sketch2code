@@ -1,0 +1,260 @@
+/* Styles go here */
+
+html, body {
+    height: 100%;
+}
+
+.wrapper {
+    width: 100%;
+    height: 100%;
+    padding: 25px;
+}
+
+.wrapper:after {
+    content: ' ';
+    display: block;
+    clear: both;
+}
+
+#video {
+    /*display: none;*/
+    position: absolute;
+    max-width: 70%;
+    z-index: -1;
+}
+
+.hide {
+    display: none;
+}
+
+.canvas {
+    margin: 0 auto;
+    height: auto;
+    position: relative;
+    z-index: 1;
+    max-height: 100vh;
+}
+@media (orientation: landscape) {
+    .canvas {
+        max-width: 100%;
+    }
+}
+@media (orientation: portrait) {
+    .canvas {
+        width: 100%;
+    }
+}
+
+html {
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+html {
+    font-size: 16px;
+    background:#000;
+    color: #fff;
+}
+
+.thumbs,
+.parts {
+    padding: 20px;
+}
+
+.parts a {
+    display: block;
+    text-align: center;
+}
+
+.parts img,
+.thumbs img {
+    background: #fff;
+    cursor: pointer;
+}
+.thumbs img {
+    width: 100px;
+}
+.controlls {
+    position: fixed;
+    bottom: 100px;
+    left: 0;
+    right: 0;
+    z-index: 11;
+    text-align: center;
+}
+.button {
+    padding: 0 35px;
+    border: 1px solid #000;
+    background-color: rgb(126, 170, 56);
+    box-shadow: rgb(126, 170, 56) 0px 0px 0px 1px;
+    color: rgb(255, 255, 255);
+    font-size: 32px;
+    text-align: center;
+    font-weight: 700;
+    height: 86px;
+    line-height: 36px;
+    display: inline-block;
+    text-transform: uppercase;
+    max-width: 100%;
+    border-radius: 36px;
+}
+
+.button span {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    display: block;
+    text-align: center;
+    width: 100%;
+    vertical-align: middle;
+}
+
+.resolution {
+    color: #fff;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+.frame {
+    float: left;
+    width: 50%;
+    height: 100%;
+    padding: 0 10px;
+}
+.frame__inner {
+    overflow: hidden;
+    height: 100%;
+    border: 2px solid #eee;
+}
+.frame--scale iframe {
+    width: 1400px;
+    height: 1400px;
+    transform-origin: top left;
+}
+
+
+/* -- Form styles -- */
+
+
+form.login {
+    position: fixed;
+    top: 30%;
+    max-height: 140px;
+    max-width: 390px;
+    width: 100%;
+    left: 50%;
+    transform: translate(-50%);
+    text-align: center;
+    z-index: 2;
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 40px 20px;
+}
+
+form.login input[type=text] {
+    position: relative;
+    left: -5px;
+    width: 160px;
+    height: 29px;
+    padding: 0 10px;
+    font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+    background-color: rgba(255,255,255, 0.8);
+    border: 1px solid #C5C5C5;
+    border-radius: 2px;
+}
+
+form.login input[type=text].denied {
+    border: 1px solid red;
+    outline: none;
+}
+
+form.login input[type=text].animation {
+    transition: 0.1s;
+    -webkit-animation-name: shakeMe;
+    -webkit-animation-duration: 0.6s;
+    -webkit-animation-delay: 0s;
+    animation-name: shakeMe;
+    animation-duration: 0.6s;
+    animation-delay: 0s;
+}
+
+form.login input[type=text]::-webkit-input-placeholder {
+    color: #ABABAB;
+}
+
+form.login input[type=submit] {
+    position: relative;
+    left: 5px;
+    height: 29px;
+    line-height: 29px;
+    text-align: center;
+    padding: 0 10px;
+    font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    border: none;
+    border-radius: 2px;
+    background-color: rgba(90, 147, 187, 0.69);
+    color: #fff;
+}
+
+
+@-webkit-keyframes shakeMe {
+    0%   { left: -10px; }
+    15%  { left: 5px; }
+    30%   { left: -10px; }
+    45%  { left: 5px; }
+    60%   { left: -10px; }
+    75%  { left: 5px; }
+    90%   { left: -10px; }
+    100%  { left: 5px; }
+}
+
+@-moz-keyframes shakeMe {
+    0%   { left: -10px; }
+    15%  { left: 5px; }
+    30%   { left: -10px; }
+    45%  { left: 5px; }
+    60%   { left: -10px; }
+    75%  { left: 5px; }
+    90%   { left: -10px; }
+    100%  { left: 5px; }
+}
+
+@-o-keyframes shakeMe {
+    0%   { left: -10px; }
+    15%  { left: 5px; }
+    30%   { left: -10px; }
+    45%  { left: 5px; }
+    60%   { left: -10px; }
+    75%  { left: 5px; }
+    90%   { left: -10px; }
+    100%  { left: 5px; }
+}
+
+@keyframes shakeMe {
+    0%   { left: -10px; }
+    15%  { left: 5px; }
+    30%   { left: -10px; }
+    45%  { left: 5px; }
+    60%   { left: -10px; }
+    75%  { left: 5px; }
+    90%   { left: -10px; }
+    100%  { left: 5px; }
+}
+
+@media(max-width: 500px){
+    form.login {
+        max-height: 120px;
+        max-width: 300px;
+        margin: -60px 0 0 -150px;
+        padding: 40px 0 0;
+    }
+}
+
+/* -- Blur effect -- */

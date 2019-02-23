@@ -2,7 +2,8 @@ const video = document.getElementById('video');
 const canvas = document.querySelector('.canvas');
 const thumbs = document.querySelector('.thumbs');
 const parts = document.querySelector('.parts');
-const button = document.querySelector('.button');
+const button = document.querySelector('.button__photo');
+const buttonBluetooth = document.querySelector('.button__bluetooth');
 const resolution = document.querySelector('.resolution');
 const context = canvas.getContext('2d');
 const key = '5c6ec8e728ca2e129e8696e7';
@@ -30,6 +31,8 @@ const config = {
     strokeStyle: 'green'
 };
 
+// var socket = io();
+
 const settings = Object.assign({
     paperScale: config.paperWidth/config.paperHeight,
     rows: [
@@ -56,6 +59,8 @@ settings.rowsHeight = settings.rows.reduce((a, b) => a + b.height, 0);
 
 // Draw canvas from video
 resCheck(function (camWidth, camHeight) {
+    camWidth = camWidth || 1024;
+    camHeight = camHeight || 768;
     let width = camWidth,
         height = camHeight;
     if (state.isPortrait){
@@ -66,6 +71,16 @@ resCheck(function (camWidth, camHeight) {
     console.log('resolution: ', width, height);
     resolution.innerHTML = `${width}/${height}`;
 
+    captureUserMedia(camWidth, camHeight, function () {
+        broadcastUI.createRoom({
+            roomName: 'nc-summit2019'
+        });
+    });
+
+    requestAnimationFrame(renderFrame);
+});
+
+function captureUserMedia(camWidth, camHeight, callback) {
     navigator.mediaDevices.getUserMedia({
         audio: false,
         video: {
@@ -79,12 +94,12 @@ resCheck(function (camWidth, camHeight) {
         }
     }).then(function(stream) {
         video.srcObject = stream;
+        BRconfig.attachStream = stream;
+        callback && callback();
     }, function(error) {
         console.log(error);
     });
-
-    requestAnimationFrame(renderFrame);
-});
+}
 
 function renderFrame() {
     requestAnimationFrame(renderFrame);
@@ -192,6 +207,8 @@ const renderImage = function (data, filename, wrapper) {
 };
 
 const postImage = function (filename, canvasPart, url) {
+    console.log('postImage: ', filename);
+    window.location.hash = filename;
     if (!url) {
         console.log('Wrong url: ', url);
         return;

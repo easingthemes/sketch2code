@@ -1,14 +1,20 @@
 {
   "name": "sketch2code",
-  "version": "2.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "http-server -S"
-  },
+  "version": "0.0.0",
+  "private": true,
   "author": "Dragan Filipovic",
-  "license": "UNLICENSED",
-  "devDependencies": {
-    "http-server": "^0.11.1"
+  "scripts": {
+    "start": "node ./bin/www",
+    "debug": "DEBUG=sketch2code:* node $NODE_DEBUG_OPTION ./bin/www"
+  },
+  "dependencies": {
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "express": "~4.16.0",
+    "hbs": "~4.0.1",
+    "http-errors": "~1.6.2",
+    "httpolyglot": "^0.1.2",
+    "morgan": "~1.9.0",
+    "socket.io": "0.9.19"
   }
 }
