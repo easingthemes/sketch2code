@@ -74,7 +74,7 @@ io.sockets.on('connection', function (socket) {
 
 function onNewNamespace(channel, sender) {
   console.log('onNewNamespace', channel);
-  io.on('connection', function (socket) {
+  io.of('/' + channel).on('connection', function (socket) {
     console.log('of on connection: ', channel);
     var username;
     if (io.isConnected) {

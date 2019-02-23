@@ -13,7 +13,7 @@ var BRconfig = {
         io.connect(SIGNALING_SERVER).emit('new-channel', {
             channel: config.channel,
             sender: sender,
-            trest: 'trest'
+            trest: 'trest r'
         });
 
         var socket = io.connect(SIGNALING_SERVER + config.channel);

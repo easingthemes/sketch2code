@@ -80,6 +80,7 @@ var broadcast = function(config) {
                 });
             },
             onRemoteStream: function(stream) {
+                console.log('onRemoteStream');
                 if (!stream) return;
 
                 video.srcObject = stream;
@@ -106,7 +107,8 @@ var broadcast = function(config) {
 
             config.onRemoteStream({
                 video: video,
-                stream: _config.stream
+                stream: _config.stream,
+                rem: 'trest rem'
             });
 
             /* closing subsocket here on the offerer side */

@@ -14,7 +14,7 @@ var BRconfig = {
             sender: sender
         });
 
-        var socket = io.connect(SIGNALING_SERVER);
+        var socket = io.connect(SIGNALING_SERVER + config.channel);
         socket.channel = config.channel;
         socket.on('connect', function() {
             console.log('connect client');
@@ -26,7 +26,7 @@ var BRconfig = {
             socket.emit('message', {
                 sender: sender,
                 data: message,
-                sendTrest: 'trest'
+                trest: 'trest s'
             });
         };
 
