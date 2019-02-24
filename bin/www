@@ -83,7 +83,7 @@ function onNewNamespace(channel, sender) {
     }
 
     socket.on('message', function (data) {
-      console.log('onNewNamespace message: ', sender, 'data: ', data);
+      console.log('onNewNamespace message: ', sender, 'data: ', data.sender);
       if (data.sender == sender) {
         if (!username) {
           username = data.data.sender;

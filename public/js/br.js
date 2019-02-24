@@ -27,9 +27,9 @@ var broadcast = function(config) {
     }
 
     function onDefaultSocketResponse(response) {
-        console.log('onDefaultSocketResponse');
+        console.log('onDefaultSocketResponse', response);
         if (response.userToken == self.userToken) return;
-
+        console.log('onDefaultSocketResponse isGetNewRoom', isGetNewRoom);
         if (isGetNewRoom && response.roomToken && response.broadcaster) {
             console.log('onRoomFound', response);
             config.onRoomFound(response);
@@ -104,7 +104,7 @@ var broadcast = function(config) {
 
         function afterRemoteStreamStartedFlowing() {
             gotstream = true;
-
+            console.log('afterRemoteStreamStartedFlowing');
             config.onRemoteStream({
                 video: video,
                 stream: _config.stream,
@@ -116,6 +116,7 @@ var broadcast = function(config) {
         }
 
         function onRemoteStreamStartsFlowing() {
+            console.log('onRemoteStreamStartsFlowing');
             if(navigator.userAgent.match(/Android|iPhone|iPad|iPod|BlackBerry|IEMobile/i)) {
                 // if mobile device
                 return afterRemoteStreamStartedFlowing();
@@ -156,6 +157,7 @@ var broadcast = function(config) {
         }
 
         function socketResponse(response) {
+            console.log('socketResponse', response);
             if (response.userToken == self.userToken) return;
             if (response.firstPart || response.secondPart || response.thirdPart) {
                 if (response.firstPart) {
@@ -195,7 +197,6 @@ var broadcast = function(config) {
     }
 
     function startBroadcasting() {
-        console.log('startBroadcasting');
         defaultSocket && defaultSocket.send({
             roomToken: self.roomToken,
             roomName: self.roomName,

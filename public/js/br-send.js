@@ -4,6 +4,7 @@
 
 var BRconfig = {
     openSocket: function(config) {
+        console.log('openSocket', config);
         var SIGNALING_SERVER = '/'; //https://192.168.178.37:3000'; // 'https://webrtcweb.com:9559/';
 
         config.channel = config.channel || location.href.replace(/\/|:|#|%|\.|\[|\]/g, '');
@@ -14,7 +15,7 @@ var BRconfig = {
             sender: sender
         });
 
-        var socket = io.connect(SIGNALING_SERVER + config.channel);
+        var socket = io.connect(SIGNALING_SERVER);
         socket.channel = config.channel;
         socket.on('connect', function() {
             console.log('connect client');
