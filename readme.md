@@ -1,3 +1,6 @@
+# Requirements
+NodeJS v8+ https://nodejs.org/en/download/
+
 # Install dependencies
 ```
 npm install
