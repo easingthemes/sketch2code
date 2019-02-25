@@ -1,0 +1,47 @@
+<script>
+    if(!location.hash.replace('#', '').length) {
+        location.href = location.href.split('#')[0] + '#' + (Math.random() * 100).toString().replace('.', '');
+        location.reload();
+    }
+</script>
+<script src="/js/plugins/adapter-latest.js"></script>
+<div class="settings">
+    <button class="button button__start">Start Broadcast</button>
+    <div class="visible--local hidden">Connect to: <button class="button button__room">Searching ...</button></div>
+</div>
+<!-- CAMERA -->
+<div class="wrapper camera hidden visible--remote">
+    <video id="video" autoplay="true" playsinline></video>
+    <canvas class="canvas"></canvas>
+    <div class="controls">
+        <button class="button button__photo">
+            <span>Take Photo</span>
+        </button>
+    </div>
+
+    <div class="thumbs"></div>
+    <div class="parts"></div>
+</div>
+
+<div class="wrapper presentation hidden visible--local">
+    <div class="frame">
+        <div class="camera__remote"></div>
+    </div>
+    <div class="frame">
+        <div class="frame__inner frame--scale">
+
+        </div>
+    </div>
+</div>
+<!-- PRESENTATION -->
+
+
+<!-- SCRIPTS -->
+<script src="/js/plugins/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/plugins/RTCPeerConnection-v1.5.js"> </script>
+<script src="/js/resolution.js"></script>
+<script src="/js/br.js"> </script>
+<script src="/js/br-test.js"> </script>
+<script src="/js/camera.js"> </script>
+

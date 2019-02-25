@@ -1,12 +1,12 @@
 (function() {
     NC = window.NC || {};
-    NC.camera = function () {
+    NC.camera = function (ncConnect) {
+        console.log('CAMERA: Starting ...');
         const video = document.getElementById('video');
         const canvas = document.querySelector('.canvas');
         const thumbs = document.querySelector('.thumbs');
         const parts = document.querySelector('.parts');
         const button = document.querySelector('.button__photo');
-        const resolution = document.querySelector('.resolution');
 
         const context = canvas.getContext('2d');
         const key = '5c6ec8e728ca2e129e8696e7';
@@ -70,8 +70,7 @@
                 height = camWidth;
             }
 
-            console.log('resolution: ', width, height);
-            resolution.innerHTML = `${width}/${height}`;
+            console.log('CAMERA: resolution: ', width, height);
 
             captureUserMedia(camWidth, camHeight);
 
@@ -93,23 +92,13 @@
                     }
                 }
             }).then(function(stream) {
+                console.log('CAMERA: stream captured');
                 video.srcObject = stream;
                 // Stream to socket
-                const user = NC.room.dataset.user;
-                const token = NC.room.dataset.token;
-
-                if (!user) {
-                    if (NC.room.dataset.name !== NC.roomName) {
-                        NC.broadcastUI.createRoom({
-                            roomName: NC.roomName
-                        });
-                    }
-                    NC.BRconfig.attachStream = stream;
-                    NC.broadcastUI.joinRoom({
-                        roomToken: token,
-                        joinUser: user
-                    });
-                }
+                ncConnect.config.attachStream = stream;
+                ncConnect.broadcastUI.createRoom({
+                    roomName: 'nc-summit19'
+                });
             }, function(error) {
                 console.log(error);
             });
