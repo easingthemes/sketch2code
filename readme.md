@@ -36,6 +36,7 @@ Wait a bit to find broadcaster.
 Wait for connection.
 
 2.3. You should see remote camera stream on Iphone demo image, and local AEM on Chrome demo image.
+On first visit You need to click `Load unsafe scripts` in Chrome bar on teh right.
 
 2.4. Click on Iphone home button to take a picture from remote Camera
 
