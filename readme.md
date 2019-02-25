@@ -44,3 +44,12 @@ Wait for connection.
 2.6 Once processing is done, animation will stop and AEM instance in Chrome demo image (iframe) wil reload.
 
 .
+
+# 3. Sample images for training
+
+If you need only sample images, use instruction from Step #1, and 
+
+1.5. Click on `Take photo` button to get photos from Camera directly.
+
+!! Images in this app are not saved anywhere.
+DB is disconnected for testing purposes.
