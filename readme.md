@@ -7,3 +7,40 @@ npm install
 ```
 npm start
 ```
+
+Local server is using port `3000`;
+Use IP instead `localhost` to test it cross devices.
+
+# 1. Open Camera
+
+1.1. Open homepage with custom hash, eg:
+```
+https://192.168.178.37:3000/#123123
+```
+1.2. Click on `Start Broadcast` button.
+
+1.3. Allow Camera usage.
+
+1.4. You should see camera stream with grid on top.
+
+# 2. Open Presentation
+
+2.1. Open homepage with same custom hash as on Camera. eg:
+```
+https://192.168.178.37:3000/#123123
+```
+Wait a bit to find broadcaster.
+
+2.2. Click `Connect to: nc-summit19` on Iphone demo image.
+
+Wait for connection.
+
+2.3. You should see remote camera stream on Iphone demo image, and local AEM on Chrome demo image.
+
+2.4. Click on Iphone home button to take a picture from remote Camera
+
+2.5 You should see processing loader, matrix effect in the background.
+
+2.6 Once processing is done, animation will stop and AEM instance in Chrome demo image (iframe) wil reload.
+
+.
