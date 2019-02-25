@@ -31,10 +31,14 @@ NC.connect = function() {
                     button.click();
                 });
 
-                socket.on('reload-frame', function() {
-                    console.log('SOCKET: Reload frame');
+                socket.on('reload-frame', function(data) {
+                    console.log('SOCKET: Reload frame', data);
                     const frameAem = document.querySelector('.frame__aem');
                     frameAem.src += '';
+                    frameAem.onload = function () {
+                        const matrix = NC.matrix();
+                        matrix.stop(data)
+                    }
                 });
 
                 socket.on('room-ready', function(room) {
@@ -80,11 +84,10 @@ NC.connect = function() {
     }
 };
 
-
-
 (function() {
     const ncConnect = NC.connect();
     ncConnect.broadcastUI = broadcast(ncConnect.config);
+
     NC.join = function (token, user) {
         token = token || NC.elements.room.getAttribute('data-token');
         user = user || NC.elements.room.getAttribute('data-user');
@@ -108,18 +111,22 @@ NC.connect = function() {
         NC.join();
     });
 
+    function handleRemotePhoto() {
+        console.log('remote button click');
+        const matrix = NC.matrix();
+        const interval = matrix.start();
+        NC.socket.emit('take-photo', interval);
+    }
     const buttonRemote = document.querySelector('.button__remotePhoto');
 
     buttonRemote.addEventListener('click', function (e) {
         e.preventDefault();
-        console.log('remote button click');
-        NC.socket.emit('take-photo');
+        handleRemotePhoto();
     });
 
     document.body.onkeyup = function(e){
         if(e.keyCode === 32){
-            console.log('remote button click');
-            NC.socket.emit('take-photo');
+            handleRemotePhoto();
         }
     }
 })();

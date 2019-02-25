@@ -212,7 +212,6 @@
 
         const postImage = function (filename, canvasPart, url) {
             console.log('postImage: ', filename);
-            window.location.hash = filename;
             if (!url) {
                 console.log('Wrong url: ', url);
                 NC.socket.emit('reload-frame');

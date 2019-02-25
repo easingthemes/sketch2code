@@ -17,7 +17,7 @@
 </div>
 <!-- PRESENTATION -->
 <div class="wrapper presentation hidden visible--local">
-    <div class="frame">
+    <div class="frame frame--left">
         <div class="camera__remote frame__inner">
             <img src="/images/iphone.png" class="iphone__frame"/>
             <div class="button__room">Searching ...</div>
@@ -26,12 +26,14 @@
             </div>
         </div>
     </div>
-    <div class="frame">
+    <div class="frame frame--right">
         <div class="frame__inner frame--scale">
+            <img src="/images/chrome.png" class="chrome__frame"/>
+            <iframe class="frame__aem" allow="geolocation; microphone; camera"></iframe>
         </div>
     </div>
 </div>
-
+<canvas class="matrix" width="1440" height="1200"></canvas>
 <!-- SCRIPTS -->
 <script src="/js/plugins/jquery.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
@@ -40,5 +42,7 @@
 <script src="/js/presentation.js"> </script>
 <script src="/js/resolution.js"></script>
 <script src="/js/br.js"> </script>
+<script src="/js/matrix.js"> </script>
 <script src="/js/script.js"> </script>
 <script src="/js/camera.js"> </script>
+
