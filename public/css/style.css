@@ -132,10 +132,11 @@ iframe {
     width: 50%;
     height: 100%;
     padding: 0 10px;
+    min-height: 600px;
 }
 .frame__inner {
     overflow: hidden;
-    height: 100%;
+    height: 600px;
     border: 2px solid #eee;
 }
 .frame--scale iframe {
@@ -143,7 +144,66 @@ iframe {
     height: 1400px;
     transform-origin: top left;
 }
+.video__remote {
+    transform-origin: top left;
+}
 
 .hidden {
-    /*display: none;*/
+    display: none;
+}
+
+.presentation video {
+    max-width: 100%;
+}
+
+.camera__remote {
+    position: relative;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.iphone__frame {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 290px;
+    height: auto;
+    z-index: 2;
+}
+
+.button__room,
+.video__remote {
+    z-index: 3;
+    width: 239px;
+    position: absolute;
+    top: 76px;
+    bottom: 89px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    padding: 30px 10px;
+    display: flex;
+    justify-content:center;
+    align-content:center;
+    flex-direction:column;
+    cursor: pointer;
+}
+
+.video__remote {
+    z-index: 1;
+    padding: 0;
+}
+
+.button__remotePhoto {
+    z-index: 3;
+    width: 200px;
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    padding: 15px;
+    cursor: pointer;
+    border-radius: 30px;
 }

@@ -92,7 +92,14 @@ function onNewNamespace(channel, sender) {
         socket.broadcast.emit('message', data.data);
       }
     });
-
+    socket.on('take-photo', function (data) {
+      console.log('take-photo: ', data);
+      socket.broadcast.emit('take-photo', data);
+    });
+    socket.on('reload-frame', function (data) {
+      console.log('reload-frame: ', data);
+      socket.broadcast.emit('reload-frame', data);
+    });
     socket.on('disconnect', function() {
       console.log('onNewNamespace disconnect', username);
       if(username) {

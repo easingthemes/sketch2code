@@ -6,16 +6,4 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Presentation' });
 });
 
-router.get('/camera', function(req, res, next) {
-  res.render('camera', { title: 'Camera' });
-});
-
-router.get('/stream', function(req, res, next) {
-  res.render('stream', { title: 'Stream' });
-});
-
-router.get('/test', function(req, res, next) {
-  res.render('test', { title: 'Test' });
-});
-
 module.exports = router;

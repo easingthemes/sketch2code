@@ -15,11 +15,9 @@ var broadcast = function(config) {
         defaultSocket = { };
 
     function openDefaultSocket() {
-        console.log('openDefaultSocket');
         defaultSocket = config.openSocket({
             onmessage: onDefaultSocketResponse,
             callback: function(socket) {
-                console.log('openDefaultSocket callback: ', defaultSocket);
                 defaultSocket = socket;
             }
         });
@@ -27,11 +25,8 @@ var broadcast = function(config) {
     }
 
     function onDefaultSocketResponse(response) {
-        console.log('onDefaultSocketResponse', response);
         if (response.userToken == self.userToken) return;
-        console.log('onDefaultSocketResponse isGetNewRoom', isGetNewRoom);
         if (isGetNewRoom && response.roomToken && response.broadcaster) {
-            console.log('onRoomFound', response);
             config.onRoomFound(response);
         }
 
@@ -46,7 +41,6 @@ var broadcast = function(config) {
     }
 
     function openSubSocket(_config) {
-        console.log('openSubSocket');
         if (!_config.channel) return;
         var socketConfig = {
             channel: _config.channel,
@@ -80,7 +74,6 @@ var broadcast = function(config) {
                 });
             },
             onRemoteStream: function(stream) {
-                console.log('onRemoteStream');
                 if (!stream) return;
 
                 video.srcObject = stream;
@@ -104,11 +97,9 @@ var broadcast = function(config) {
 
         function afterRemoteStreamStartedFlowing() {
             gotstream = true;
-            console.log('afterRemoteStreamStartedFlowing');
             config.onRemoteStream({
                 video: video,
-                stream: _config.stream,
-                rem: 'trest rem'
+                stream: _config.stream
             });
 
             /* closing subsocket here on the offerer side */
@@ -116,7 +107,6 @@ var broadcast = function(config) {
         }
 
         function onRemoteStreamStartsFlowing() {
-            console.log('onRemoteStreamStartsFlowing');
             if(navigator.userAgent.match(/Android|iPhone|iPad|iPod|BlackBerry|IEMobile/i)) {
                 // if mobile device
                 return afterRemoteStreamStartedFlowing();
@@ -157,7 +147,6 @@ var broadcast = function(config) {
         }
 
         function socketResponse(response) {
-            console.log('socketResponse', response);
             if (response.userToken == self.userToken) return;
             if (response.firstPart || response.secondPart || response.thirdPart) {
                 if (response.firstPart) {
@@ -206,7 +195,6 @@ var broadcast = function(config) {
     }
 
     function uniqueToken() {
-        console.log('uniqueToken');
         var s4 = function() {
             return Math.floor(Math.random() * 0x10000).toString(16);
         };
@@ -217,7 +205,6 @@ var broadcast = function(config) {
 
     return {
         createRoom: function(_config) {
-            console.log('createRoom');
             self.roomName = _config.roomName || 'Anonymous';
             self.roomToken = uniqueToken();
 
@@ -226,7 +213,6 @@ var broadcast = function(config) {
             startBroadcasting();
         },
         joinRoom: function(_config) {
-            console.log('joinRoom');
             self.roomToken = _config.roomToken;
             isGetNewRoom = false;
 

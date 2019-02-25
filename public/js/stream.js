@@ -1,3 +1,0 @@
-(function() {
-    NC = window.NC || {};
-});

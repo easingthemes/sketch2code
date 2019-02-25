@@ -1,244 +1,125 @@
-const video = document.getElementById('video');
-const canvas = document.querySelector('.canvas');
-const thumbs = document.querySelector('.thumbs');
-const parts = document.querySelector('.parts');
-const button = document.querySelector('.button__photo');
-const buttonBluetooth = document.querySelector('.button__bluetooth');
-const resolution = document.querySelector('.resolution');
-const context = canvas.getContext('2d');
-const key = '5c6ec8e728ca2e129e8696e7';
-const db = 'https://sketch2code-9caf.restdb.io';
-const state = {
-    videoWidth: 0,
-    videoHeight: 0,
-    x: 0,
-    width: 0,
-    height: 0,
-    takePhoto: false,
-    isPortrait: window.innerHeight > window.innerWidth,
-    isRetina: window.devicePixelRatio > 1
-};
-const retina = state.isPortrait ? 1.9 : 1;
-const config = {
-    spacing: 10 * retina,
-    header: 40 * retina,
-    stage: 200 * retina,
-    teaserRow: 150 * retina,
-    paperWidth: 67.5,
-    paperHeight: 98,
-    imageType: 'png',
-    lineWidth: 6,
-    strokeStyle: 'green'
-};
+NC = window.NC || {};
 
-// var socket = io();
+NC.connect = function() {
+    const button = document.querySelector('.button__photo');
+    return {
+        config: {
+            openSocket: function(config) {
+                console.log('SOCKET: Start ...');
+                const SIGNALING_SERVER = '/';
 
-const settings = Object.assign({
-    paperScale: config.paperWidth/config.paperHeight,
-    rows: [
-        {
-            height: config.header,
-            url: `${db}/media`
-        },
-        {
-            height: config.stage,
-            url: `${db}/media`
-        },
-        {
-            height: config.teaserRow,
-            url: `${db}/media`
-        },
-        {
-            height: config.teaserRow,
-            url: `${db}/media`
-        }
-    ],
-}, config);
+                config.channel = config.channel || location.href.replace(/\/|:|#|%|\.|\[|\]/g, '');
+                const sender = Math.round(Math.random() * 999999999) + 999999999;
 
-settings.rowsHeight = settings.rows.reduce((a, b) => a + b.height, 0);
+                io.connect(SIGNALING_SERVER).emit('new-channel', {
+                    channel: config.channel,
+                    sender: sender
+                });
 
-// Draw canvas from video
-resCheck(function (camWidth, camHeight) {
-    camWidth = camWidth || 1024;
-    camHeight = camHeight || 768;
-    let width = camWidth,
-        height = camHeight;
-    if (state.isPortrait){
-        width = camHeight;
-        height = camWidth;
-    }
+                const socket = io.connect(SIGNALING_SERVER + config.channel);
+                NC.socket = socket;
+                socket.channel = config.channel;
+                socket.on('connect', function() {
+                    console.log('SOCKET: Connected');
+                    if (config.callback) {
+                        config.callback(socket);
+                    }
+                });
 
-    console.log('resolution: ', width, height);
-    resolution.innerHTML = `${width}/${height}`;
+                socket.on('take-photo', function() {
+                    console.log('SOCKET: Take photo');
+                    button.click();
+                });
 
-    captureUserMedia(camWidth, camHeight, function () {
-        broadcastUI.createRoom({
-            roomName: 'nc-summit2019'
-        });
-    });
+                socket.on('reload-frame', function() {
+                    console.log('SOCKET: Reload frame');
+                    const frameAem = document.querySelector('.frame__aem');
+                    frameAem.src += '';
+                });
 
-    requestAnimationFrame(renderFrame);
-});
+                socket.on('room-ready', function(room) {
+                    console.log('SOCKET: room ready');
+                });
 
-function captureUserMedia(camWidth, camHeight, callback) {
-    navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: {
-            facingMode: 'environment',
-            width: {
-                min: camWidth
+                socket.send = function(message) {
+                    console.log('SOCKET: emitting message', message);
+                    socket.emit('message', {
+                        sender: sender,
+                        data: message
+                    });
+                };
+
+                socket.on('message', config.onmessage);
             },
-            height: {
-                min: camHeight
+            onRemoteStream: function(media) {
+                console.log('SOCKET: remote stream received');
+                const video = media.video;
+                video.setAttribute('controls', false);
+                video.classList.add('video__remote');
+                NC.handleAem();
+                NC.elements.cameraRemote.insertBefore(video, NC.elements.cameraRemote.firstChild);
+
+                video.play();
+
+                //const scale = NC.elements.cameraRemote.offsetWidth / video.offsetWidth;
+                const scale = 239 / video.offsetWidth;
+
+                video.style.webkitTransform = `scale(${scale}) translateX(-50%)`;
+            },
+            onRoomFound: function(room) {
+                console.log('SOCKET: Room found: ', room);
+                NC.elements.buttonStart.style.display = 'none';
+                NC.elements.settings.style.display = 'none';
+                NC.showElements(NC.elements.visibleLocal);
+                NC.elements.room.setAttribute('data-token', room.roomToken);
+                NC.elements.room.setAttribute('data-user', room.broadcaster);
+                NC.elements.room.setAttribute('data-name', room.roomName);
+                NC.elements.room.innerHTML = `Connect to: ${room.roomName}`;
             }
         }
-    }).then(function(stream) {
-        video.srcObject = stream;
-        BRconfig.attachStream = stream;
-        callback && callback();
-    }, function(error) {
-        console.log(error);
+    }
+};
+
+
+
+(function() {
+    const ncConnect = NC.connect();
+    ncConnect.broadcastUI = broadcast(ncConnect.config);
+    NC.join = function (token, user) {
+        token = token || NC.elements.room.getAttribute('data-token');
+        user = user || NC.elements.room.getAttribute('data-user');
+        ncConnect.broadcastUI.joinRoom({
+            roomToken: token,
+            joinUser: user
+        });
+        NC.elements.room.style.display = 'none';
+        NC.elements.settings.style.display = 'none';
+    };
+
+    NC.elements.buttonStart.addEventListener('click', function (e) {
+        e.preventDefault();
+        NC.elements.settings.style.display = 'none';
+        NC.showElements(NC.elements.visibleRemote);
+        NC.camera(ncConnect);
     });
-}
 
-function renderFrame() {
-    requestAnimationFrame(renderFrame);
+    NC.elements.room.addEventListener('click', function (e) {
+        e.preventDefault();
+        NC.join();
+    });
 
-    if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        state.videoWidth = video.videoWidth;
-        state.videoHeight = video.videoHeight;
+    const buttonRemote = document.querySelector('.button__remotePhoto');
 
-        const maxHeight = state.videoHeight - settings.spacing * 2;
-        state.height = maxHeight < settings.rowsHeight ? maxHeight : settings.rowsHeight;
-        state.width = settings.paperScale * state.height;
-        state.x = (state.videoWidth - state.width) / 2;
+    buttonRemote.addEventListener('click', function (e) {
+        e.preventDefault();
+        console.log('remote button click');
+        NC.socket.emit('take-photo');
+    });
 
-        canvas.width = state.videoWidth;
-        canvas.height = state.videoHeight;
-        context.drawImage(video, 0, 0, state.videoWidth, state.videoHeight);
-
-        if (!state.takePhoto) {
-            renderLayout(context, state.x, state.width);
+    document.body.onkeyup = function(e){
+        if(e.keyCode === 32){
+            console.log('remote button click');
+            NC.socket.emit('take-photo');
         }
     }
-}
-
-const renderLayout = function (ctx, left, width) {
-    ctx.strokeStyle = settings.strokeStyle;
-    ctx.lineWidth = settings.lineWidth;
-
-    let top = settings.spacing;
-    settings.rows.forEach(function (row) {
-        ctx.rect(left, top, width, row.height);
-        top = top + row.height;
-    });
-    ctx.stroke();
-};
-
-// Handle partial images
-button.addEventListener('click', function (e) {
-    e.preventDefault();
-    handleImages();
-});
-
-const handleImages = function () {
-    let top = settings.spacing;
-    const time = Date.now();
-    state.takePhoto = true;
-
-    setTimeout(function () {
-        renderArea(
-            `all-${time}.${settings.imageType}`,
-            state.x,
-            top,
-            state.width,
-            state.height,
-            canvas,
-            thumbs,
-            null
-        );
-
-        settings.rows.forEach(function (row, i) {
-            renderArea(
-                `part-${i}_${time}.${settings.imageType}`,
-                state.x,
-                top,
-                state.width,
-                row.height,
-                canvas,
-                parts,
-                row.url
-            );
-            top = top + row.height;
-        });
-
-        state.takePhoto = false;
-    }, 40);
-};
-
-const renderArea = function (name, x, y, width, height, fullCanvas, wrapper, url) {
-    const newCanvas = getCanvasArea(x, y, width, height, fullCanvas);
-    const data = newCanvas.toDataURL();
-
-    renderImage(data, name, wrapper);
-    postImage(name, newCanvas, url);
-};
-
-const getCanvasArea = function (x, y, width, height, fullCanvas) {
-    const newCanvas = document.createElement('canvas');
-    newCanvas.width = width;
-    newCanvas.height = height;
-
-    const newContext = newCanvas.getContext('2d');
-    newContext.drawImage(fullCanvas, x, y, width, height, 0, 0, width, height);
-
-    return newCanvas;
-};
-
-const renderImage = function (data, filename, wrapper) {
-    const link = document.createElement('a');
-    link.setAttribute('download', filename);
-    link.href = data;
-    const img = document.createElement('img');
-    img.setAttribute('download', filename);
-    img.src = data;
-    wrapper.appendChild(link);
-    link.appendChild(img);
-};
-
-const postImage = function (filename, canvasPart, url) {
-    console.log('postImage: ', filename);
-    window.location.hash = filename;
-    if (!url) {
-        console.log('Wrong url: ', url);
-        return;
-    }
-
-    // canvasPart.toBlob(function(blob) {
-    //     const formData = new FormData();
-    //     formData.append('image', blob, filename);
-    //     // restdb.io API works only with jQuery
-    //     // TODO fix vanilla JS request and remove jQuery
-    //     $.ajaxPrefilter(function( options ) {
-    //         if ( !options.beforeSend) {
-    //             options.beforeSend = function(xhr) {
-    //                 xhr.setRequestHeader('x-apikey', key);
-    //             }
-    //         }
-    //     });
-    //
-    //     $.ajax({
-    //         data: formData,
-    //         url: url,
-    //         method: 'POST',
-    //         enctype: 'multipart/form-data',
-    //         processData: false,
-    //         contentType: false,
-    //         traditional: true,
-    //     }).done(function (response) {
-    //         console.log('response', response);
-    //     }).fail(function (e) {
-    //         console.log('error response', e);
-    //     });
-    // });
-};
+})();

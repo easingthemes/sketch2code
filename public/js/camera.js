@@ -141,6 +141,7 @@
         // Handle partial images
         button.addEventListener('click', function (e) {
             e.preventDefault();
+            console.log('Button click');
             handleImages();
         });
 
@@ -214,6 +215,7 @@
             window.location.hash = filename;
             if (!url) {
                 console.log('Wrong url: ', url);
+                NC.socket.emit('reload-frame');
                 return;
             }
 

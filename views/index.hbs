@@ -1,21 +1,44 @@
-<form class="login">
-    <input type="text" placeholder="Please enter your secret key!"/>
-    <input type="submit" value="Connect" />
-</form>
-<div class="wrapper">
+
+<div class="settings">
+    <button class="button button__start">Start Broadcast</button>
+</div>
+<!-- CAMERA -->
+<div class="wrapper camera hidden visible--remote">
+    <video id="video" autoplay="true" playsinline></video>
+    <canvas class="canvas"></canvas>
+    <div class="controls">
+        <button class="button button__photo">
+            <span>Take Photo</span>
+        </button>
+    </div>
+
+    <div class="thumbs"></div>
+    <div class="parts"></div>
+</div>
+<!-- PRESENTATION -->
+<div class="wrapper presentation hidden visible--local">
     <div class="frame">
-        <div class="frame__inner">
-            <iframe src="/error"></iframe>
+        <div class="camera__remote frame__inner">
+            <img src="/images/iphone.png" class="iphone__frame"/>
+            <div class="button__room">Searching ...</div>
+            <div class="button__remotePhoto hidden visible--local">
+                <span>Take Photo Remote</span>
+            </div>
         </div>
     </div>
-    <div class="frame frame--scale">
-        <div class="frame__inner">
-            <iframe src="http://sketch2code:6700/editor.html/content/schwarzkopf/de/de/home.html"></iframe>
+    <div class="frame">
+        <div class="frame__inner frame--scale">
         </div>
     </div>
 </div>
-<a href="/video" >Camera</a>
+
+<!-- SCRIPTS -->
 <script src="/js/plugins/jquery.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
-<script src="/js/video.js"></script>
-<script src="/js/presentation.js"></script>
+<script src="/js/plugins/RTCPeerConnection-v1.5.js"> </script>
+<script src="/js/elements.js"> </script>
+<script src="/js/presentation.js"> </script>
+<script src="/js/resolution.js"></script>
+<script src="/js/br.js"> </script>
+<script src="/js/script.js"> </script>
+<script src="/js/camera.js"> </script>
