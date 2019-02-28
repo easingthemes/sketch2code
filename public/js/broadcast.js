@@ -5,7 +5,7 @@
 // This library is known as multi-user connectivity wrapper!
 // It handles connectivity tasks to make sure two or more users can interconnect!
 
-var broadcast = function(config) {
+NC.broadcast = function(config) {
     var self = {
             userToken: uniqueToken()
         },

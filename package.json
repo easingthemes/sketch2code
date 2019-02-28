@@ -5,7 +5,8 @@
   "author": "Dragan Filipovic",
   "scripts": {
     "start": "node ./bin/www",
-    "debug": "DEBUG=sketch2code:* node $NODE_DEBUG_OPTION ./bin/www"
+    "debug": "DEBUG=sketch2code:* node $NODE_DEBUG_OPTION ./bin/www",
+    "mock": "simple-mock-server --cors"
   },
   "dependencies": {
     "cookie-parser": "~1.4.3",
@@ -15,6 +16,8 @@
     "http-errors": "~1.6.2",
     "httpolyglot": "^0.1.2",
     "morgan": "~1.9.0",
+    "request": "^2.88.0",
+    "simple-mock-server": "^0.2.1",
     "socket.io": "0.9.19"
   }
 }

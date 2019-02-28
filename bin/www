@@ -9,6 +9,32 @@ var debug = require('debug')('sketch2code:server');
 var fs = require('fs');
 var path = require('path');
 var httpolyglot = require('httpolyglot');
+const request = require('request');
+
+const aemContent = require('./aem-content.json');
+
+const aemDomain = 'http://localhost:4502';
+const aemPagePath = 'content/test/oneweb/master/en/about/summit/content/jcr%3Acontent';
+const components = [
+    'jcr:content',
+    'stage',
+    'teaserlist',
+    'teaserlist'
+];
+const optionsAem = {
+  // url: 'http://192.168.25.87:6700/content/schwarzkopf/de/de/home/jcr%3Acontent/contentPar/articleteasergroup',
+  url: `${aemDomain}/${aemPagePath}/par/teaserlist`,
+  method: 'POST',
+  auth: {
+    user: 'admin',
+    pass: 'admin'
+  },
+  formData: {
+    columns: 2,
+    maxItems: 4
+  }
+};
+
 
 /**
  * Get port from environment and store in Express.
@@ -39,6 +65,7 @@ io.set('transports', [
   'xhr-polling',
   'jsonp-polling'
 ]);
+io.set('log level',0);
 app.set('socketio', io);
 var channels = {};
 io.sockets.on('connection', function (socket) {
@@ -73,9 +100,8 @@ io.sockets.on('connection', function (socket) {
 });
 
 function onNewNamespace(channel, sender) {
-  console.log('onNewNamespace', channel);
+  // console.log('onNewNamespace', channel);
   io.of('/' + channel).on('connection', function (socket) {
-    console.log('of on connection: ', channel);
     var username;
     if (io.isConnected) {
       io.isConnected = false;
@@ -83,7 +109,7 @@ function onNewNamespace(channel, sender) {
     }
 
     socket.on('message', function (data) {
-      console.log('onNewNamespace message: ', sender, 'data: ', data.sender);
+      // console.log('onNewNamespace message: ', sender, 'data: ', data.sender);
       if (data.sender == sender) {
         if (!username) {
           username = data.data.sender;
@@ -93,15 +119,29 @@ function onNewNamespace(channel, sender) {
       }
     });
     socket.on('take-photo', function (data) {
-      console.log('take-photo: ', data);
-      socket.broadcast.emit('take-photo', data);
+      console.log('on take-photo: ', data);
+      console.log('=== 5.2. SOCKET: on "take-photo" === :: Server ::');
+      console.log('=== 5.3. SOCKET: emit "photo-taken" === :: Server ::');
+      socket.broadcast.emit('photo-taken', data);
     });
+
     socket.on('reload-frame', function (data) {
       console.log('reload-frame: ', data);
-      socket.broadcast.emit('reload-frame', data);
+      // socket.broadcast.emit('frame-reloaded', data);
     });
+
+    socket.on('aem-post', function (data) {
+      console.log('=== 6.2. SOCKET: on "aem-post" === :: Server ::', data);
+      request.post(optionsAem, (err, resp, body) => {
+        if (err) {
+          return console.error('Request failed:', err);
+        }
+        console.log('=== 6.3. SOCKET: request done, emit "aem-posted" === :: Server ::', optionsAem.url, response && response.statusCode);
+        socket.broadcast.emit('aem-posted', data);
+      });
+    });
+
     socket.on('disconnect', function() {
-      console.log('onNewNamespace disconnect', username);
       if(username) {
         socket.broadcast.emit('user-left', username);
         username = null;

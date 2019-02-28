@@ -6,7 +6,6 @@
         const canvas = document.querySelector('.canvas');
         const thumbs = document.querySelector('.thumbs');
         const parts = document.querySelector('.parts');
-        const button = document.querySelector('.button__photo');
 
         const context = canvas.getContext('2d');
         const key = '5c6ec8e728ca2e129e8696e7';
@@ -40,19 +39,19 @@
             rows: [
                 {
                     height: config.header,
-                    url: `${db}/media`
+                    url: `${NC.api}/header`
                 },
                 {
                     height: config.stage,
-                    url: `${db}/media`
+                    url: `${NC.api}/stage`
                 },
                 {
                     height: config.teaserRow,
-                    url: `${db}/media`
+                    url: `${NC.api}/teaser`
                 },
                 {
                     height: config.teaserRow,
-                    url: `${db}/media`
+                    url: `${NC.api}/teaser`
                 }
             ],
         }, config);
@@ -60,7 +59,7 @@
         settings.rowsHeight = settings.rows.reduce((a, b) => a + b.height, 0);
 
         // Draw canvas from video
-        resCheck(function (camWidth, camHeight) {
+        NC.resolutionCheck(function (camWidth, camHeight) {
             camWidth = camWidth || 1024;
             camHeight = camHeight || 768;
             let width = camWidth,
@@ -70,14 +69,13 @@
                 height = camWidth;
             }
 
-            console.log('CAMERA: resolution: ', width, height);
-
             captureUserMedia(camWidth, camHeight);
 
             requestAnimationFrame(renderFrame);
         });
 
         function captureUserMedia(camWidth, camHeight) {
+            console.log('=== 1.1. CAMERA: Start === :: Remote ::');
             camWidth = camWidth || 1280;
             camHeight = camHeight || 720;
             navigator.mediaDevices.getUserMedia({
@@ -92,10 +90,11 @@
                     }
                 }
             }).then(function(stream) {
-                console.log('CAMERA: stream captured');
+                console.log('=== 2.2. CAMERA: End === :: Remote ::');
                 video.srcObject = stream;
                 // Stream to socket
                 ncConnect.config.attachStream = stream;
+                console.log('=== 3.1. SOCKET: broadcastUI.createRoom === :: Remote ::');
                 ncConnect.broadcastUI.createRoom({
                     roomName: 'nc-summit19'
                 });
@@ -138,54 +137,21 @@
             ctx.stroke();
         };
 
-        // Handle partial images
-        button.addEventListener('click', function (e) {
-            e.preventDefault();
-            console.log('Button click');
-            handleImages();
-        });
-
-        const handleImages = function () {
-            let top = settings.spacing;
-            const time = Date.now();
-            state.takePhoto = true;
-
-            setTimeout(function () {
-                renderArea(
-                    `all-${time}.${settings.imageType}`,
-                    state.x,
-                    top,
-                    state.width,
-                    state.height,
-                    canvas,
-                    thumbs,
-                    null
-                );
-
-                settings.rows.forEach(function (row, i) {
-                    renderArea(
-                        `part-${i}_${time}.${settings.imageType}`,
-                        state.x,
-                        top,
-                        state.width,
-                        row.height,
-                        canvas,
-                        parts,
-                        row.url
-                    );
-                    top = top + row.height;
-                });
-
-                state.takePhoto = false;
-            }, 40);
-        };
-
         const renderArea = function (name, x, y, width, height, fullCanvas, wrapper, url) {
-            const newCanvas = getCanvasArea(x, y, width, height, fullCanvas);
-            const data = newCanvas.toDataURL();
+            return new Promise((resolve, reject) => {
+                const newCanvas = getCanvasArea(x, y, width, height, fullCanvas);
+                const data = newCanvas.toDataURL();
 
-            renderImage(data, name, wrapper);
-            postImage(name, newCanvas, url);
+                renderImage(data, name, wrapper);
+
+                postImage(name, newCanvas, url)
+                    .then((data) => {
+                        resolve(data);
+                    })
+                    .catch((e) => {
+                        reject(e);
+                    });
+            });
         };
 
         const getCanvasArea = function (x, y, width, height, fullCanvas) {
@@ -211,40 +177,96 @@
         };
 
         const postImage = function (filename, canvasPart, url) {
-            console.log('postImage: ', filename);
-            if (!url) {
-                console.log('Wrong url: ', url);
-                NC.socket.emit('reload-frame');
-                return;
-            }
+            return new Promise((resolve, reject) => {
+                if (!url) {
+                    console.log('Wrong url: ', url);
+                    reject('Wrong url');
+                    return;
+                }
 
-            // canvasPart.toBlob(function(blob) {
-            //     const formData = new FormData();
-            //     formData.append('image', blob, filename);
-            //     // restdb.io API works only with jQuery
-            //     // TODO fix vanilla JS request and remove jQuery
-            //     $.ajaxPrefilter(function( options ) {
-            //         if ( !options.beforeSend) {
-            //             options.beforeSend = function(xhr) {
-            //                 xhr.setRequestHeader('x-apikey', key);
-            //             }
-            //         }
-            //     });
-            //
-            //     $.ajax({
-            //         data: formData,
-            //         url: url,
-            //         method: 'POST',
-            //         enctype: 'multipart/form-data',
-            //         processData: false,
-            //         contentType: false,
-            //         traditional: true,
-            //     }).done(function (response) {
-            //         console.log('response', response);
-            //     }).fail(function (e) {
-            //         console.log('error response', e);
-            //     });
-            // });
+                canvasPart.toBlob(function(blob) {
+                    const formData = new FormData();
+                    formData.append('image', blob, filename);
+                    // restdb.io API works only with jQuery
+                    // TODO fix vanilla JS request and remove jQuery
+                    $.ajaxPrefilter(function( options ) {
+                        if ( !options.beforeSend) {
+                            // options.beforeSend = function(xhr) {
+                            //     xhr.setRequestHeader('x-apikey', key);
+                            // }
+                        }
+                    });
+
+                    $.ajax({
+                        data: formData,
+                        url: url,
+                        method: 'POST',
+                        enctype: 'multipart/form-data',
+                        processData: false,
+                        contentType: false,
+                        traditional: true,
+                    }).done(function (response) {
+                        console.log('response', response);
+                        resolve(response);
+                    }).fail(function (e) {
+                        console.log('error response', e);
+                        reject(`error response ${e}`);
+                    });
+                });
+            });
         };
+
+        const handleImages = function () {
+            let top = settings.spacing;
+            const time = Date.now();
+            state.takePhoto = true;
+
+            setTimeout(function () {
+                // renderArea(
+                //     `all-${time}.${settings.imageType}`,
+                //     state.x,
+                //     top,
+                //     state.width,
+                //     state.height,
+                //     canvas,
+                //     thumbs,
+                //     null
+                // );
+
+                settings.rows.forEach(function (row, i) {
+                    renderArea(
+                        `part-${i}_${time}.${settings.imageType}`,
+                        state.x,
+                        top,
+                        state.width,
+                        row.height,
+                        canvas,
+                        parts,
+                        row.url
+                    ).then(function (data) {
+                        console.log('=== 6.1. SOCKET: emit "aem-post" === :: Remote ::', data);
+                        NC.socket.emit('aem-post', data);
+                    }).catch(function (e) {
+                        console.log('Error rendering images', e);
+                        console.log('=== 6.1. SOCKET: emit "aem-post" === :: Remote ::', 'NONE');
+                        NC.socket.emit('aem-post', 'NONE');
+                    });
+                    top = top + row.height;
+                });
+
+                state.takePhoto = false;
+            }, 40);
+        };
+
+        // const addEvents = function () {
+        //     // Handle partial images
+        //     NC.elements.buttonPhoto.addEventListener('click', function (e) {
+        //         e.preventDefault();
+        //         console.log('=== 5.6. SOCKET: buttonPhoto.addEventListener === :: Remote ::');
+        //         handleImages();
+        //     });
+        // };
+
+        return handleImages;
     }
 })();
