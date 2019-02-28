@@ -221,20 +221,11 @@
             const time = Date.now();
             state.takePhoto = true;
 
-            setTimeout(function () {
-                // renderArea(
-                //     `all-${time}.${settings.imageType}`,
-                //     state.x,
-                //     top,
-                //     state.width,
-                //     state.height,
-                //     canvas,
-                //     thumbs,
-                //     null
-                // );
+            const promises = [];
 
+            setTimeout(function () {
                 settings.rows.forEach(function (row, i) {
-                    renderArea(
+                    promises.push(renderArea(
                         `part-${i}_${time}.${settings.imageType}`,
                         state.x,
                         top,
@@ -243,29 +234,19 @@
                         canvas,
                         parts,
                         row.url
-                    ).then(function (data) {
-                        console.log('=== 6.1. SOCKET: emit "aem-post" === :: Remote ::', data);
-                        NC.socket.emit('aem-post', data);
-                    }).catch(function (e) {
-                        console.log('Error rendering images', e);
-                        console.log('=== 6.1. SOCKET: emit "aem-post" === :: Remote ::', 'NONE');
-                        NC.socket.emit('aem-post', 'NONE');
-                    });
+                    ));
                     top = top + row.height;
                 });
+
+                Promise.all(promises.map(p => p.catch(() => undefined)))
+                    .then(function (data) {
+                        console.log('=== 6.1. SOCKET: emit "aem-post" === :: Remote ::', data);
+                        NC.socket.emit('aem-post', data);
+                    });
 
                 state.takePhoto = false;
             }, 40);
         };
-
-        // const addEvents = function () {
-        //     // Handle partial images
-        //     NC.elements.buttonPhoto.addEventListener('click', function (e) {
-        //         e.preventDefault();
-        //         console.log('=== 5.6. SOCKET: buttonPhoto.addEventListener === :: Remote ::');
-        //         handleImages();
-        //     });
-        // };
 
         return handleImages;
     }

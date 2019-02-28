@@ -17,6 +17,7 @@
     "httpolyglot": "^0.1.2",
     "morgan": "~1.9.0",
     "request": "^2.88.0",
+    "request-promise-native": "^1.0.7",
     "simple-mock-server": "^0.2.1",
     "socket.io": "0.9.19"
   }

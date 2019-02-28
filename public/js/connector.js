@@ -32,10 +32,15 @@ NC.connect = function() {
                     NC.handleImages();
                 });
 
+                let aemReloaded = false;
                 socket.on('aem-posted', function(data) {
-                    console.log('=== 6.3. SOCKET: on "aem-posted" === :: Local ::', data);
-                    const frameAem = document.querySelector('.frame__aem');
-                    frameAem.src += '';
+                    console.log('aemReloaded', aemReloaded);
+                    if (!aemReloaded) {
+                        console.log('=== 6.3. SOCKET: on "aem-posted" === :: Local ::', data);
+                        const frameAem = document.querySelector('.frame__aem');
+                        frameAem.src += '';
+                        aemReloaded = true;
+                    }
                 });
 
                 socket.on('room-ready', function(room) {
@@ -69,7 +74,7 @@ NC.connect = function() {
             },
             onRoomFound: function(room) {
                 const existingRoom = NC.elements.room.dataset.name;
-
+                console.log(existingRoom, room.roomName);
                 if (existingRoom !== room.roomName) {
                     console.log('=== 3.2. SOCKET: onRoomFound === :: Local ::', room);
                     NC.elements.buttonStart.style.display = 'none';
