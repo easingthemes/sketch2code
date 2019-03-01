@@ -1,3 +1,4 @@
 {
-  "isEmpty": "post stage"
+  "endpoint": "stage",
+  "classificaton": "image"
 }

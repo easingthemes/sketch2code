@@ -1,6 +1,6 @@
 {
     "jcr:content": {
-        "showHeader": true
+        "showHeader": "true"
     },
     "stage": {
         "jcr:primaryType": "nt:unstructured",

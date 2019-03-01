@@ -1,3 +1,4 @@
 {
-  "isEmpty": "post header"
+  "endpoint": "header",
+  "classificaton": "header"
 }

@@ -15,12 +15,7 @@ const aemContent = require('./aem-content.json');
 
 const aemDomain = 'http://localhost:4502';
 const aemPagePath = 'content/test/oneweb/master/en/about/summit/content/jcr%3Acontent';
-const components = [
-    '',
-    'stage',
-    'par/teaserlist',
-    'par/teaserlist_2'
-];
+
 const optionsAem = {
   // url: 'http://192.168.25.87:6700/content/schwarzkopf/de/de/home/jcr%3Acontent/contentPar/articleteasergroup',
   url: `${aemDomain}/${aemPagePath}/par/teaserlist`,
@@ -33,24 +28,6 @@ const optionsAem = {
     columns: 2,
     maxItems: 4
   }
-};
-
-const postToAem = (soc) => {
-  const promises = components.map(component => {
-    const componentPath = component ? `/${component}` : '';
-    return request.post(Object.assign(optionsAem, {
-      url: `${aemDomain}/${aemPagePath}${componentPath}`
-    }));
-  });
-
-  Promise.all(promises.map(p => p.catch(() => undefined)))
-      .then(function (data, data1, data2) {
-          if (data[0]) {
-            return console.error('Request failed:', data[0]);
-          }
-        console.log('=== 6.3. SOCKET: request done, emit "aem-posted" === :: Server ::', data, data1, data2);
-        soc.broadcast.emit('aem-posted', data);
-      });
 };
 
 /**
@@ -145,10 +122,58 @@ function onNewNamespace(channel, sender) {
     });
 
     let isAemPosted = false;
-    socket.on('aem-post', function (data) {
+    socket.on('aem-post', function (responseArray) {
       if (!isAemPosted) {
-        console.log('=== 6.2. SOCKET: on "aem-post" === :: Server ::', data);
-        postToAem(socket);
+        const finalArr = responseArray.filter(i => i);
+        console.log('=== 6.2. SOCKET: on "aem-post" === :: Server ::', responseArray);
+        const promises = finalArr.map(response => {
+          let nodePath = '';
+          let formData = {};
+          switch (response.ml.endpoint) {
+            case 'header':
+              formData = {
+                hideHeader: response.ml.classificaton === 'header' ? "true" : "false"
+              };
+              nodePath = '';
+              break;
+            case 'stage':
+              nodePath = '/stage';
+              if (response.ml.classificaton === 'image') {
+                formData = Object.assign(aemContent['stage'], {
+                  title: ''
+                });
+              }
+
+              if (response.ml.classificaton === 'textimage') {
+                formData = Object.assign(aemContent.teaserlist, {});
+              }
+              break;
+            case 'teaserlist':
+              nodePath = response.i === 2 ? '/par/teaserlist' : '/par/teaserlist_2';
+              if (response.ml.classificaton !== 'empty') {
+                formData = Object.assign(aemContent.teaserlist, {
+                  maxItems: response.ml.classificaton,
+                  columns: response.ml.classificaton,
+                  initialSize: response.ml.classificaton
+                });
+              }
+              break;
+          }
+
+          return request.post(Object.assign(optionsAem, {
+            url: `${aemDomain}/${aemPagePath}${nodePath}`,
+            formData: formData
+          }));
+        });
+
+        Promise.all(promises.map(p => p.catch(() => undefined)))
+            .then(function (data) {
+              if (data[0]) {
+                return console.error('Request failed:', data[0]);
+              }
+              console.log('=== 6.3. SOCKET: request done, emit "aem-posted" === :: Server ::', data);
+              // socket.broadcast.emit('aem-posted', data);
+            });
 
         isAemPosted = true;
       }

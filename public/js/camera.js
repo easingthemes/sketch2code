@@ -39,19 +39,19 @@
             rows: [
                 {
                     height: config.header,
-                    url: `${NC.api}/header`
+                    url: `header`
                 },
                 {
                     height: config.stage,
-                    url: `${NC.api}/stage`
+                    url: `stage`
                 },
                 {
                     height: config.teaserRow,
-                    url: `${NC.api}/teaser`
+                    url: `teaserlist`
                 },
                 {
                     height: config.teaserRow,
-                    url: `${NC.api}/teaser`
+                    url: `teaserlist`
                 }
             ],
         }, config);
@@ -137,7 +137,7 @@
             ctx.stroke();
         };
 
-        const renderArea = function (name, x, y, width, height, fullCanvas, wrapper, url) {
+        const renderArea = function (name, x, y, width, height, fullCanvas, wrapper, url, i) {
             return new Promise((resolve, reject) => {
                 const newCanvas = getCanvasArea(x, y, width, height, fullCanvas);
                 const data = newCanvas.toDataURL();
@@ -145,8 +145,12 @@
                 renderImage(data, name, wrapper);
 
                 postImage(name, newCanvas, url)
-                    .then((data) => {
-                        resolve(data);
+                    .then((resp) => {
+                        const finalResponse = {
+                          ml: resp,
+                          i: i
+                        };
+                        resolve(finalResponse);
                     })
                     .catch((e) => {
                         reject(e);
@@ -233,7 +237,8 @@
                         row.height,
                         canvas,
                         parts,
-                        row.url
+                        `${NC.api}/${row.url}`,
+                        i
                     ));
                     top = top + row.height;
                 });

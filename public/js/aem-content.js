@@ -1,8 +1,8 @@
 NC = window.NC || NC;
 
 NC.content = {
-    'jcr:content': {
-        showHeader: true
+    header: {
+        showHeader: "true"
     },
     stage: {
         'jcr:primaryType': 'nt:unstructured',
