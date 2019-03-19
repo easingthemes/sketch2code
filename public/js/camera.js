@@ -190,7 +190,7 @@
 
                 canvasPart.toBlob(function(blob) {
                     const formData = new FormData();
-                    formData.append('image', blob, filename);
+                    formData.append('uploaded_file', blob, filename);
                     // restdb.io API works only with jQuery
                     // TODO fix vanilla JS request and remove jQuery
                     $.ajaxPrefilter(function( options ) {
