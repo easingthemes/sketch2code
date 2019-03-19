@@ -129,37 +129,51 @@ function onNewNamespace(channel, sender) {
         const promises = finalArr.map(response => {
           let nodePath = '';
           let formData = {};
-          switch (response.ml.endpoint) {
+          const ml = JSON.parse(response.ml);
+          const classificaton = ml.classification;
+          console.log(classificaton, typeof classificaton);
+          // if (!classificaton) {
+          //   console.log('classificaton not defined', classificaton);
+          //   return;
+          // }
+          switch (ml.endpoint) {
             case 'header':
               formData = {
-                hideHeader: response.ml.classificaton === 'header' ? "true" : "false"
+                hideHeader: classificaton === 'header' ? "true" : "false"
               };
               nodePath = '';
+              //console.log('HEADER: FORMDATA ', classificaton, formData);
               break;
             case 'stage':
               nodePath = '/stage';
-              if (response.ml.classificaton === 'image') {
+              if (classificaton === 'image') {
                 formData = Object.assign(aemContent['stage'], {
                   title: ''
                 });
+                //console.log('STAGE: FORMDATA image ', formData);
               }
 
-              if (response.ml.classificaton === 'textimage') {
-                formData = Object.assign(aemContent.teaserlist, {});
+              if (classificaton === 'textimage') {
+                formData = aemContent.stage;
+                //console.log('STAGE: FORMDATA textimage ', formData);
               }
+
+              //console.log('STAGE: FORMDATA ', classificaton, formData);
               break;
             case 'teaserlist':
               nodePath = response.i === 2 ? '/par/teaserlist' : '/par/teaserlist_2';
-              if (response.ml.classificaton !== 'empty') {
+              if (classificaton !== 'empty') {
                 formData = Object.assign(aemContent.teaserlist, {
-                  maxItems: response.ml.classificaton,
-                  columns: response.ml.classificaton,
-                  initialSize: response.ml.classificaton
+                  maxItems: classificaton,
+                  columns: classificaton,
+                  initialSize: classificaton
                 });
+                //console.log('teaserlist FORMDATA:', classificaton, formData);
               }
               break;
           }
 
+          console.log(`${aemDomain}/${aemPagePath}${nodePath}`, formData)
           return request.post(Object.assign(optionsAem, {
             url: `${aemDomain}/${aemPagePath}${nodePath}`,
             formData: formData
@@ -169,10 +183,10 @@ function onNewNamespace(channel, sender) {
         Promise.all(promises.map(p => p.catch(() => undefined)))
             .then(function (data) {
               if (data[0]) {
-                return console.error('Request failed:', data[0]);
+                console.error('trest', data[0]);
               }
               console.log('=== 6.3. SOCKET: request done, emit "aem-posted" === :: Server ::', data);
-              // socket.broadcast.emit('aem-posted', data);
+               socket.broadcast.emit('aem-posted', data);
             });
 
         isAemPosted = true;
