@@ -191,7 +191,7 @@ function onNewNamespace(channel, sender) {
                socket.broadcast.emit('aem-posted', data);
             });
 
-        isAemPosted = true;
+        // isAemPosted = true;
       }
     });
 
