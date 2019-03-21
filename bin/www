@@ -123,19 +123,21 @@ function onNewNamespace(channel, sender) {
 
     let isAemPosted = false;
     socket.on('aem-post', function (responseArray) {
+      console.log('responseArray', responseArray, typeof responseArray);
       if (!isAemPosted) {
-        const finalArr = responseArray.filter(i => i);
+        if (!responseArray) {
+          return;
+        }
+        const finalArr = responseArray; //.filter(i => i);
         console.log('=== 6.2. SOCKET: on "aem-post" === :: Server ::', responseArray);
         const promises = finalArr.map(response => {
           let nodePath = '';
           let formData = {};
-          const ml = JSON.parse(response.ml);
-          const classificaton = ml.classification;
-          console.log(classificaton, typeof classificaton);
-          // if (!classificaton) {
-          //   console.log('classificaton not defined', classificaton);
-          //   return;
-          // }
+          console.log('response.ml', response.ml, typeof response.ml);
+          // const ml = JSON.parse(response.ml);
+          const ml = response.ml;
+          const classificaton = ml.classificaton;
+
           switch (ml.endpoint) {
             case 'header':
               formData = {
@@ -173,7 +175,7 @@ function onNewNamespace(channel, sender) {
               break;
           }
 
-          console.log(`${aemDomain}/${aemPagePath}${nodePath}`, formData)
+          console.log(`Post to AEM: ur: ${aemDomain}/${aemPagePath}${nodePath}, data:`, formData);
           return request.post(Object.assign(optionsAem, {
             url: `${aemDomain}/${aemPagePath}${nodePath}`,
             formData: formData
