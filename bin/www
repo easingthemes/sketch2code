@@ -1,40 +1,16 @@
 #!/usr/bin/env node
-
-/**
- * Module dependencies.
- */
-
-var app = require('../app');
-var debug = require('debug')('sketch2code:server');
-var fs = require('fs');
-var path = require('path');
-var httpolyglot = require('httpolyglot');
-const request = require('request-promise-native');
-
-const aemContent = require('./aem-content.json');
-
-const aemDomain = 'http://localhost:4502';
-const aemPagePath = 'content/test/oneweb/master/en/about/summit/content/jcr%3Acontent';
-
-const optionsAem = {
-  // url: 'http://192.168.25.87:6700/content/schwarzkopf/de/de/home/jcr%3Acontent/contentPar/articleteasergroup',
-  url: `${aemDomain}/${aemPagePath}/par/teaserlist`,
-  method: 'POST',
-  auth: {
-    user: 'admin',
-    pass: 'admin'
-  },
-  formData: {
-    columns: 2,
-    maxItems: 4
-  }
-};
+const app = require('../app');
+const debug = require('debug')('sketch2code:server');
+const fs = require('fs');
+const path = require('path');
+const httpolyglot = require('httpolyglot');
+const handleSocket = require('./handleSocket');
 
 /**
  * Get port from environment and store in Express.
  */
 console.log('Starting ...');
-var port = normalizePort(process.env.PORT || '3000');
+const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
@@ -45,10 +21,7 @@ const options = {
   cert: fs.readFileSync(path.join(__dirname, 'cert.pem'))
 };
 
-var server = httpolyglot.createServer(options, app);
-
-// http.createServer(app).listen(3000);
-// https.createServer(options, app).listen(443);
+const server = httpolyglot.createServer(options, app);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -61,148 +34,9 @@ io.set('transports', [
 ]);
 io.set('log level',0);
 app.set('socketio', io);
-var channels = {};
-io.sockets.on('connection', function (socket) {
-  socket.setMaxListeners(21);
-  console.log('connection io.isConnected: ', io.isConnected);
-  var initiatorChannel = '';
-  if (!io.isConnected) {
-    io.isConnected = true;
-  }
 
-  socket.on('new-channel', function (data) {
-    console.log('new-channel, channels: ', channels, 'data: ', data);
-    if (!channels[data.channel]) {
-      initiatorChannel = data.channel;
-    }
+handleSocket(io);
 
-    channels[data.channel] = data.channel;
-    onNewNamespace(data.channel, data.sender);
-  });
-
-  socket.on('presence', function (channel) {
-    console.log('presence: ', channel);
-    var isChannelPresent = !! channels[channel];
-    socket.emit('presence', isChannelPresent);
-  });
-
-  socket.on('disconnect', function (channel) {
-    console.log('disconnect: ', channel);
-    if (initiatorChannel) {
-      delete channels[initiatorChannel];
-    }
-  });
-});
-
-function onNewNamespace(channel, sender) {
-  // console.log('onNewNamespace', channel);
-  io.of('/' + channel).on('connection', function (socket) {
-    socket.setMaxListeners(20);
-    var username;
-    if (io.isConnected) {
-      io.isConnected = false;
-      socket.emit('connect', true);
-    }
-
-    socket.on('message', function (data) {
-      // console.log('onNewNamespace message: ', sender, 'data: ', data.sender);
-      if (data.sender == sender) {
-        if (!username) {
-          username = data.data.sender;
-        }
-
-        socket.broadcast.emit('message', data.data);
-      }
-    });
-    socket.on('take-photo', function (data) {
-      console.log('on take-photo: ', data);
-      console.log('=== 5.2. SOCKET: on "take-photo" === :: Server ::');
-      console.log('=== 5.3. SOCKET: emit "photo-taken" === :: Server ::');
-      socket.broadcast.emit('photo-taken', data);
-    });
-
-    let isAemPosted = false;
-    socket.on('aem-post', function (responseArray) {
-      console.log('responseArray', responseArray, typeof responseArray);
-      if (!isAemPosted) {
-        if (!responseArray) {
-          return;
-        }
-        const finalArr = responseArray; //.filter(i => i);
-        console.log('=== 6.2. SOCKET: on "aem-post" === :: Server ::', responseArray);
-        const promises = finalArr.map(response => {
-          let nodePath = '';
-          let formData = {};
-          console.log('response.ml', response.ml, typeof response.ml);
-          // const ml = JSON.parse(response.ml);
-          const ml = response.ml;
-          const classificaton = ml.classificaton;
-
-          switch (ml.endpoint) {
-            case 'header':
-              formData = {
-                hideHeader: classificaton === 'header' ? "true" : "false"
-              };
-              nodePath = '';
-              //console.log('HEADER: FORMDATA ', classificaton, formData);
-              break;
-            case 'stage':
-              nodePath = '/stage';
-              if (classificaton === 'image') {
-                formData = Object.assign(aemContent['stage'], {
-                  title: ''
-                });
-                //console.log('STAGE: FORMDATA image ', formData);
-              }
-
-              if (classificaton === 'textimage') {
-                formData = aemContent.stage;
-                //console.log('STAGE: FORMDATA textimage ', formData);
-              }
-
-              //console.log('STAGE: FORMDATA ', classificaton, formData);
-              break;
-            case 'teaserlist':
-              nodePath = response.i === 2 ? '/par/teaserlist' : '/par/teaserlist_2';
-              if (classificaton !== 'empty') {
-                formData = Object.assign(aemContent.teaserlist, {
-                  maxItems: classificaton,
-                  columns: classificaton,
-                  initialSize: classificaton
-                });
-                //console.log('teaserlist FORMDATA:', classificaton, formData);
-              }
-              break;
-          }
-
-          console.log(`Post to AEM: ur: ${aemDomain}/${aemPagePath}${nodePath}, data:`, formData);
-          return request.post(Object.assign(optionsAem, {
-            url: `${aemDomain}/${aemPagePath}${nodePath}`,
-            formData: formData
-          }));
-        });
-
-        Promise.all(promises.map(p => p.catch(() => undefined)))
-            .then(function (data) {
-              if (data[0]) {
-                console.error('trest', data[0]);
-              }
-              console.log('=== 6.3. SOCKET: request done, emit "aem-posted" === :: Server ::', data);
-               socket.broadcast.emit('aem-posted', data);
-            });
-
-        // isAemPosted = true;
-      }
-    });
-
-    socket.on('disconnect', function() {
-      if(username) {
-        socket.broadcast.emit('user-left', username);
-        username = null;
-      }
-    });
-  });
-}
 server.on('error', onError);
 server.on('listening', onListening);
 
@@ -211,15 +45,13 @@ server.on('listening', onListening);
  */
 
 function normalizePort(val) {
-  var port = parseInt(val, 10);
+  const port = parseInt(val, 10);
 
   if (isNaN(port)) {
-    // named pipe
     return val;
   }
 
   if (port >= 0) {
-    // port number
     return port;
   }
 
@@ -235,7 +67,7 @@ function onError(error) {
     throw error;
   }
 
-  var bind = typeof port === 'string'
+  const bind = typeof port === 'string'
     ? 'Pipe ' + port
     : 'Port ' + port;
 
@@ -259,8 +91,8 @@ function onError(error) {
  */
 
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
+  const addr = server.address();
+  const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind, addr);

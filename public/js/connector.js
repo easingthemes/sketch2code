@@ -33,10 +33,13 @@ NC.connect = function() {
                 });
 
                 let aemReloaded = false;
+                socket.on('aem-posting', function(url, data) {
+                    console.log('=== 6.3.1. SOCKET: on "aem-posting" === :: Local ::', url, data);
+                });
                 socket.on('aem-posted', function(data) {
+                    console.log('=== 6.3.2. SOCKET: on "aem-posted" === :: Local ::', data);
                     console.log('aemReloaded', aemReloaded);
                     if (!aemReloaded) {
-                        console.log('=== 6.3. SOCKET: on "aem-posted" === :: Local ::', data);
                         const frameAem = document.querySelector('.frame__aem');
                         frameAem.src += '';
                         aemReloaded = true;

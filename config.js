@@ -3,5 +3,5 @@ const config = {
     pagePath: 'content/test/oneweb/master/en/ml',
     api: 'http://localhost:8080/mock' //'https://localhost:4567'//
 };
-window.NC = config;
-console.log(NC);
+console.log(config);
+module.exports = config;
