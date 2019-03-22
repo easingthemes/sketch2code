@@ -8,10 +8,7 @@ const aemPagePath = `${config.pagePath}/jcr%3Acontent`; // 'content/test/oneweb/
 const optionsAem = {
     url: `${aemDomain}/${aemPagePath}`,
     method: 'POST',
-    auth: {
-        user: 'admin',
-        pass: 'admin'
-    }
+    auth: config.auth
 };
 
 let isAemPosted = false;
