@@ -1,6 +1,16 @@
 # Requirements
 NodeJS v8+ https://nodejs.org/en/download/
 
+# Get code
+```
+git clone https://github.com/easingthemes/sketch2code.git
+```
+
+# CD into project dir
+```
+cd sketch2code
+```
+
 # Install dependencies
 ```
 npm install
@@ -11,6 +21,19 @@ npm install
 npm start
 ```
 
+# Start Mock server for testing only!
+```
+npm run mock
+```
+
+# 0 Config
+
+Update config urls:
+```
+sketch2code/config.js
+sketch2code/public/js/init.js
+```
+
 Local server is using port `3000`;
 Use IP instead `localhost` to test it cross devices.
 
@@ -18,7 +41,7 @@ Use IP instead `localhost` to test it cross devices.
 
 1.1. Open homepage with custom hash, eg:
 ```
-https://192.168.178.37:3000/#123123
+https://192.168.178.37:3000/#1
 ```
 1.2. Click on `Start Broadcast` button.
 
@@ -30,7 +53,7 @@ https://192.168.178.37:3000/#123123
 
 2.1. Open homepage with same custom hash as on Camera. eg:
 ```
-https://192.168.178.37:3000/#123123
+https://192.168.178.37:3000/#1
 ```
 Wait a bit to find broadcaster.
 
