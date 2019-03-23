@@ -45,3 +45,4 @@ typings/
 # Optional eslint cache
 .eslintcache
 .idea
+.DS_Store
