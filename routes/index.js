@@ -1,12 +1,13 @@
 var express = require('express');
 const { config } = require('../config');
 var router = express.Router();
-
+console.log(config.aemUrl);
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', {
     title: 'Presentation',
-    ...config
+    aemUrl: config.aemUrl,
+    api: config.api
   });
 });
 

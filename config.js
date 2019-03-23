@@ -2,7 +2,7 @@ const config = {
     domain: process.env.AEM_DOMAIN,
     pagePath: process.env.AEM_PATH,
     api: process.env.ML_API,
-    wcmmode: process.env.WCMMODE ? `?wcmmode=${process.env.WCMMODE}` : '',
+    wcmmode: process.env.AEM_WCMMODE ? `?wcmmode=${process.env.AEM_WCMMODE}` : '',
 };
 
 config.aemUrl = `${config.domain}/${config.pagePath}.html${config.wcmmode}`;

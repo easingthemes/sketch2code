@@ -1,5 +1,7 @@
 NC.handleAemIframe = function () {
-    // const frameSource = `${NC.domain}/${NC.pagePath}.html`;
-    // const $iframe = document.querySelector('.frame__aem');
-    // $iframe.src = frameSource;
+    const $iframe = document.querySelector('.frame__aem');
+    const frameSource = $iframe.dataset.src;
+    if (frameSource) {
+        $iframe.src = frameSource;
+    }
 };
