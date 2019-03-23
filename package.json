@@ -5,7 +5,7 @@
   "author": "Dragan Filipovic",
   "scripts": {
     "start": "node ./bin/www",
-    "debug": "AEM_DOMAIN=http://henkel-author-qa.nhe.netcentric.biz:4502 AEM_PATH=content/test/oneweb/master/en/ml ML_API=https://sketch2code-api.herokuapp.com AEM_PASS='&pqY6J{CyaCUgb4y$6' AEM_USER=admin DEBUG=sketch2code:* node $NODE_DEBUG_OPTION ./bin/www",
+    "debug": "AEM_DOMAIN=http://henkel-author-qa.nhe.netcentric.biz:4502 AEM_PATH=content/test/oneweb/master/en/ml ML_API=https://sketch2code-api.herokuapp.com AEM_PASS=admin AEM_USER=admin DEBUG=sketch2code:* node $NODE_DEBUG_OPTION ./bin/www",
     "mock": "simple-mock-server --cors"
   },
   "dependencies": {
