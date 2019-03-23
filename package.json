@@ -20,5 +20,8 @@
     "request-promise-native": "^1.0.7",
     "simple-mock-server": "^0.2.1",
     "socket.io": "0.9.19"
+  },
+  "engines": {
+    "node": "10.x"
   }
 }
