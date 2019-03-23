@@ -34,8 +34,14 @@ sketch2code/config.js
 sketch2code/public/js/init.js
 ```
 
+# URL:
+
+Local:
 Local server is using port `3000`;
 Use IP instead `localhost` to test it cross devices.
+
+# Remote:
+https://sketch2code-web.herokuapp.com/
 
 # 1. Open Camera
 
