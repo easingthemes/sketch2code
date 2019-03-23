@@ -1,6 +1,6 @@
 const request = require('request-promise-native');
 const aemContent = require('./aem-content.json');
-const config = require('../config');
+const { config, hidden } = require('../config');
 
 const aemDomain = config.domain; // 'http://localhost:4502';
 const aemPagePath = `${config.pagePath}/jcr%3Acontent`; // 'content/test/oneweb/master/en/ml/jcr%3Acontent';
@@ -8,7 +8,7 @@ const aemPagePath = `${config.pagePath}/jcr%3Acontent`; // 'content/test/oneweb/
 const optionsAem = {
     url: `${aemDomain}/${aemPagePath}`,
     method: 'POST',
-    auth: config.auth
+    auth: hidden.auth
 };
 
 let isAemPosted = false;
