@@ -28,10 +28,13 @@ npm run mock
 
 # 0 Config
 
-Update config urls:
+Pass env vars
 ```
-sketch2code/config.js
-sketch2code/public/js/init.js
+AEM_USER
+AEM_PASS
+AEM_DOMAIN
+AEM_PATH
+ML_API
 ```
 
 # URL:
