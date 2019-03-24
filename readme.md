@@ -109,3 +109,4 @@ Server logs can be accessed with:
 heroku logs --tail --app sketch2code-web
 ```
 More info: https://devcenter.heroku.com/articles/logging
+You need to login to Heroku Cli https://devcenter.heroku.com/articles/heroku-cli
