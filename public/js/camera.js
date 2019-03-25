@@ -191,16 +191,8 @@
                 canvasPart.toBlob(function(blob) {
                     const formData = new FormData();
                     formData.append('uploaded_file', blob, filename);
-                    // restdb.io API works only with jQuery
-                    // TODO fix vanilla JS request and remove jQuery
-                    $.ajaxPrefilter(function( options ) {
-                        if ( !options.beforeSend) {
-                            // options.beforeSend = function(xhr) {
-                            //     xhr.setRequestHeader('x-apikey', key);
-                            // }
-                        }
-                    });
 
+                    // TODO fix vanilla JS request and remove jQuery
                     $.ajax({
                         data: formData,
                         url: url,
@@ -212,9 +204,12 @@
                     }).done(function (response) {
                         console.log('response', response);
                         resolve(response);
-                    }).fail(function (e) {
-                        console.log('error response', e);
-                        reject(`error response ${e}`);
+                    }).fail(function (error) {
+                        console.log('error response', error);
+                        reject({
+                            error: error.responseText,
+                            url: url
+                        });
                     });
                 });
             });
@@ -243,7 +238,7 @@
                     top = top + row.height;
                 });
 
-                Promise.all(promises.map(p => p.catch(() => undefined)))
+                Promise.all(promises.map(p => p.catch((error) => error)))
                     .then(function (data) {
                         console.log('=== 6.1. SOCKET: emit "aem-post" === :: Remote ::', data);
                         NC.socket.emit('aem-post', data);

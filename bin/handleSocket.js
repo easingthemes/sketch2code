@@ -63,8 +63,8 @@ module.exports = function (io) {
                 socket.broadcast.emit('photo-taken', data);
             });
 
-            socket.on('aem-post', function (responseArray) {
-                postToAem(socket, responseArray)
+            socket.on('aem-post', function (mlResponseArray) {
+                postToAem(socket, mlResponseArray)
             });
 
             socket.on('disconnect', function() {
