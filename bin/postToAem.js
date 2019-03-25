@@ -98,7 +98,7 @@ const getFormData = (mlResult) => {
                     formData = aemContent.stage;
                 } else {
                     formData = {
-                        title: ' ',
+                        title: '&nbsp;',
                         ...emptyNode
                     };
                 }
