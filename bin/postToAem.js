@@ -77,9 +77,14 @@ const getFormData = (mlResult) => {
         "sling:resourceType": "foundation/components/parsys"
     };
 
+    console.log('FORM data entry: ', mlResult);
+
     const ml = mlResult.ml || {};
     const classificaton = ml.classificaton;
 
+    console.log('FORM data ml: ', ml);
+
+    console.log('FORM data classificaton: ', classificaton);
     if (classificaton) {
         switch (ml.endpoint) {
             case 'header':
