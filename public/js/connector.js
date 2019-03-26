@@ -32,26 +32,21 @@ NC.connect = function() {
                     NC.handleImages();
                 });
 
-                let aemReloaded = false;
                 socket.on('aem-posting', function(url, data) {
                     console.log('=== 6.3.1. SOCKET: on "aem-posting" === :: Local ::', url, data);
                 });
                 socket.on('aem-posted', function(data) {
                     console.log('=== 6.3.2. SOCKET: on "aem-posted" === :: Local ::', data);
-                    console.log('aemReloaded', aemReloaded);
-                    if (!aemReloaded) {
-                        const frameAem = document.querySelector('.frame__aem');
-                        frameAem.src += '';
-                        aemReloaded = true;
-                    }
+                    const frameAem = document.querySelector('.frame__aem');
+                    frameAem.src += '';
+                    console.log('aemReloaded');
                 });
 
                 socket.on('room-ready', function(room) {
-                    console.log('SOCKET: room ready');
+                    console.log('SOCKET: room ready', room);
                 });
 
                 socket.send = function(message) {
-                    // console.log('SOCKET: emitting message', message);
                     socket.emit('message', {
                         sender: sender,
                         data: message
