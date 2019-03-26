@@ -212,6 +212,7 @@
                             }
 
                         }
+                        console.log('responseObject', responseObject, typeof responseObject);
                         resolve(responseObject);
                     }).fail(function (error) {
                         console.log('error response', error);

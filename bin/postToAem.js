@@ -26,7 +26,7 @@ const postToAem = async (socket, mlResults) => {
         }
 
         const finalArr = getFinalMlResults(mlResults);
-
+        console.log('AEM request: ', finalArr);
         const allAemResponses = await postAllToAem(socket, finalArr);
         console.log('=== 6.3. SOCKET: request done, emit "aem-posted" === :: Server ::', allAemResponses);
         socket.broadcast.emit('aem-posted', allAemResponses);
@@ -46,7 +46,7 @@ const getFinalMlResults = (mlResults) => {
                 ml: {
                     error: true,
                     endpoint: errorEndpoint,
-                    classificaton: 'empty'
+                    classification: 'empty'
                 },
                 i
             };
@@ -80,26 +80,26 @@ const getFormData = (mlResult) => {
     console.log('FORM data entry: ', mlResult);
 
     const ml = mlResult.ml || {};
-    const classificaton = ml.classificaton;
+    const classification = ml.classification;
 
     console.log('FORM data ml: ', ml);
 
-    console.log('FORM data classificaton: ', classificaton);
-    if (classificaton) {
+    console.log('FORM data classification: ', classification);
+    if (classification) {
         switch (ml.endpoint) {
             case 'header':
                 formData = {
-                    hideHeader: classificaton === 'header' ? "false" : "true"
+                    hideHeader: classification === 'header' ? "false" : "true"
                 };
                 nodePath = '';
                 break;
             case 'stage':
                 nodePath = '/stage';
-                if (classificaton === 'image') {
+                if (classification === 'image') {
                     formData = Object.assign(aemContent['stage'], {
                         title: 'Updated title'
                     });
-                } else if (classificaton === 'textimage') {
+                } else if (classification === 'textimage') {
                     formData = aemContent.stage;
                 } else {
                     formData = {
@@ -111,11 +111,11 @@ const getFormData = (mlResult) => {
                 break;
             case 'teaserlist':
                 nodePath = mlResult.i === 2 ? '/par/teaserlist' : '/par/teaserlist_2';
-                if (classificaton !== 'empty') {
+                if (classification !== 'empty') {
                     formData = Object.assign(aemContent.teaserlist, {
-                        maxItems: classificaton,
-                        columns: classificaton,
-                        initialSize: classificaton
+                        maxItems: classification,
+                        columns: classification,
+                        initialSize: classification
                     });
                 } else {
                     formData = emptyNode;
