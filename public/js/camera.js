@@ -202,8 +202,12 @@
                         contentType: false,
                         traditional: true,
                     }).done(function (response) {
-                        console.log('response', response);
-                        resolve(response);
+                        console.log('response', response, typeof response);
+                        let responseObject = null;
+                        if (typeof response === 'string' && response.length > 1) {
+                            responseObject = JSON.parse(response);
+                        }
+                        resolve(responseObject);
                     }).fail(function (error) {
                         console.log('error response', error);
                         reject({
