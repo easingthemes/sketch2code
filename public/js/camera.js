@@ -205,7 +205,12 @@
                         console.log('response', response, typeof response);
                         let responseObject = null;
                         if (typeof response === 'string' && response.length > 1) {
-                            responseObject = JSON.parse(response);
+                            try {
+                                responseObject = JSON.parse(response);
+                            } catch (e) {
+                                console.log('response error parsing json', e);
+                            }
+
                         }
                         resolve(responseObject);
                     }).fail(function (error) {
