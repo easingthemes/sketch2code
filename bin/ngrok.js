@@ -6,7 +6,7 @@ const ngrok = require('ngrok');
     };
 
     if (process.env.NGROK_TOKEN) {
-        options.subdomain = process.env.NGROK_TOKEN;
+        options.authtoken = process.env.NGROK_TOKEN;
     }
 
     if (process.env.NGROK_DOMAIN) {

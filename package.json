@@ -5,9 +5,11 @@
   "author": "Dragan Filipovic",
   "scripts": {
     "start": "node ./bin/www",
-    "debug": "AEM_DOMAIN=http://localhost:4502 AEM_PATH=content/test/oneweb/master/en/ml ML_API=http://localhost:4567 AEM_PASS='admin' AEM_USER=admin DEBUG=sketch2code:* node $NODE_DEBUG_OPTION ./bin/www",
+    "debug": "AEM_DOMAIN=http://localhost:4502 AEM_PATH=content/test/oneweb/master/en/ml ML_API=https://sketch2code-api.herokuapp.com AEM_PASS='admin' AEM_USER=admin DEBUG=sketch2code:* node $NODE_DEBUG_OPTION ./bin/www",
     "mock": "simple-mock-server --cors",
-    "ngrok": "node ./bin/ngrok"
+    "ngrok": "NGROK_TOKEN=7bRbACazLLVQEAUW4yasA_4UDpb1TCkNc4ttn1fazD node ./bin/ngrok",
+    "vpn": "node $NODE_DEBUG_OPTION ./bin/openvpn",
+    "hbo": "NGROK_TOKEN=7bRbACazLLVQEAUW4yasA_4UDpb1TCkNc4ttn1fazD node ./hbogo/ngrok"
   },
   "dependencies": {
     "cookie-parser": "~1.4.3",
@@ -21,7 +23,7 @@
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
     "simple-mock-server": "^0.2.1",
-    "socket.io": "0.9.19"
+    "socket.io": "0.9.19",
   },
   "engines": {
     "node": "10.x"

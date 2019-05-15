@@ -5,13 +5,14 @@
     "stage": {
         "jcr:primaryType": "nt:unstructured",
         "sling:resourceType": "henkel2/henkellib/components/stage",
-        "fileReference": "https://dm.henkel-dam.com//is/image/henkel/Header_Loctite_Impregnation_new",
+        "fileReference": "/etc/designs/henkel2/publish/clientlibrary/img/ml/stage1.jpg",
         "fitValues": "WIDTH",
         "hideLink": "false",
         "pagetype": "stage__general",
         "textIsRich": "[true,true,true]",
-        "title": "&lt;p>Summit 2 Presentation&lt;/p>&#xd;&#xa;",
-        "transparency": "false"
+        "title": "&lt;p>ML Presentation&lt;/p>&#xd;&#xa;",
+        "transparency": "false",
+        "show": "true"
     },
     "par": {
         "jcr:primaryType": "nt:unstructured",

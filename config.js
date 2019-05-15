@@ -6,7 +6,7 @@ const config = {
 };
 
 config.aemUrl = `${config.domain}/${config.pagePath}.html${config.wcmmode}`;
-
+console.log('aemUrl', config.aemUrl);
 const hidden = {
     auth: {
         user: process.env.AEM_USER,
